@@ -1,49 +1,50 @@
 <template>
-  <header>
-    <div class="logo"><div>logo</div></div>
-    <div class="nav-bar">
-      <div class="nav-items">... hello ...</div>
-      <div class="nav-items">... user1 ...</div>
-      <div class="nav-items">... user2 ...</div>
-      <div class="nav-items">... user3 ...</div>
-      <div class="nav-items">... user4 ...</div>
-      <div class="nav-items">... 결론 ...</div>
-    </div>
-    <div class="skip">skip</div>
+  <header class="nav-bar">
+    <router-link 
+      :to="domain.url"
+      v-for="domain in domains"
+      :key="domain.url"
+      class="nav-items" 
+      exact-active-class="selected"
+    >
+      {{ domain.name }}
+    </router-link>
   </header>
 </template>
 
 <script>
-export default {};
+import { mapState } from 'vuex'
+export default {
+  computed: {
+    ...mapState(['domains']),
+  },
+  methods: {
+    setDirection() {
+      const name = this.$route.path.replace('/','');
+      this.$store.dispatch('setDirection', name);
+    }
+  }
+};
 </script>
 
-<style>
-header {
+<style scoped>
+.nav-bar {
   height: 100px;
   display: flex;
   justify-content: space-between;
-}
-.logo {
-  width: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-}
-.nav-bar {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
   align-items: center;
 }
 .nav-items {
-  margin: 0 20px;
+  text-align: center;
 }
-.skip {
-  width: 200px;
+.nav-items:first-of-type, .nav-items:last-of-type{
+  width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+}
+.nav-items:not(:first-of-type).nav-items:not(:last-of-type){
+  flex-grow: 1;
 }
 </style>

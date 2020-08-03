@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    welcome
+  <div class="intro">
+    user4
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    welcome
+  <div>
+    final
   </div>
 </template>
 
