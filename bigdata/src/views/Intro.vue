@@ -1,26 +1,56 @@
 <template>
-  <div class="intro">
-    <div class="user-card">a</div>
-    <div class="user-card">b</div>
-    <div class="user-card">c</div>
-    <div class="user-card">d</div>
-  </div>
+  <transition-group
+    tag="div"
+    class="cards"
+    name="cards"
+  >
+    <div v-for="card in cards" v-bind:key="card.name" class="card-item">
+      {{ card.name }}
+    </div>
+  </transition-group>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      cards: [
+        {
+          name: 'a'
+        },
+        {
+          name: 'b'
+        },
+        {
+          name: 'c'
+        },
+        {
+          name: 'd'
+        },
+      ]
+    }
+  }
+};
 </script>
 
 <style scoped>
-.intro {
-  width: 100%;
+.cards {
+  background-color: #ccc;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #ccc;
 }
-.user-card {
+.card-item {
   width: 300px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  font-weight: bold;
   background-color: #bbb;
+  /* transition: all 1s; */
 }
+/* .cards-enter-active {
+} */
 </style>

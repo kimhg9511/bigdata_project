@@ -46,6 +46,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    triggerTransition(state, payload) {
+      console.log(state);
+      console.log(payload);
+    }
   },
   actions: {
   },

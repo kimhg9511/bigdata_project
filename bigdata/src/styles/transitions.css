@@ -1,0 +1,30 @@
+/* slide-right */
+.slider-right-enter-active, .slider-right-leave-active {
+  transition: all 1.2s ease;
+  position: absolute;
+}
+.slider-right-enter {
+  transform: translateX(-100%);
+}
+.slider-right-leave-to {
+  transform: translateX(100%);
+}
+/* slide-left */
+.slider-left-enter-active, .slider-left-leave-active {
+  transition: all 1.2s ease;
+  position: absolute;
+}
+.slider-left-enter {
+  transform: translateX(100%);
+}
+.slider-left-leave-to {
+  transform: translateX(-100%);
+}
+/* first open page  */
+.slider-fade-enter-active{
+  transition: all 1.2s ease;
+}
+.slider-fade-enter {
+  transform: translateY(3%);
+  opacity: 0;
+}

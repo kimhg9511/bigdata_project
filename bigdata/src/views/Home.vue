@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    welcome
+    welcome!!
   </div>
 </template>
 
@@ -11,5 +11,11 @@ export default {
 </script>
 
 <style>
-
+.home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  font-weight: bold;
+}
 </style>

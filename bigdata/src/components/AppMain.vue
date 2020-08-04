@@ -2,9 +2,10 @@
   <div class="carousel">
     <transition
       :name="`slider-${this.direction}`"
-      class="slide"
+      @before-enter="setTransition"
+      @after-enter="triggerTransition"
     >
-      <router-view />
+      <router-view class="wrap"/>
     </transition>
   </div>
 </template>
@@ -20,12 +21,36 @@ export default {
   computed: {
     ...mapState(['domains']),
     ...mapGetters(['urls']),
-  },
-  methods: {
-    test(){
-      console.log('test');
+    url() {
+      return this.$route.path.replace('/','');
     }
   },
+  methods: {
+    setTransition(el){
+      // this.$store.commit()
+      if(this.url == "intro") {
+        const childs = [...el.childNodes];
+        childs.map((item)=> {
+          item.style.transition = "all 2s ease"
+          item.style.opacity = "0"
+          item.style.transform = "translateX(-10%)"
+        });
+      }
+    },
+    triggerTransition(el){
+      if(this.url == "intro") {
+        const childs = [...el.childNodes];
+        childs.map((item, index)=> {
+          setTimeout(function(){
+            item.style.opacity = "1"
+            item.style.transform = "translateX(0)"
+          }
+          ,300*index)
+        });
+      }
+    }
+  },
+  // 캐러셀 슬라이드 방향 결정
   watch: {
     '$route' (to, from) {
       const toDepth = to.path.replace('/','');
@@ -43,48 +68,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .carousel {
+  min-height: 600px;
   flex-grow: 1;
   position: relative;
 }
-.carousel>div{
+.carousel>.wrap {
   width: 100%;
   height: 100%;
-}
-
-/* slide-right */
-.slider-right-enter-active, .slider-right-leave-active {
-  transition: all .8s ease;
-  position: absolute;
-  top: 0;
-}
-.slider-right-enter {
-  transform: translateX(-100%);
-}
-.slider-right-leave-to {
-  transform: translateX(100%);
-}
-
-/* slide-left */
-.slider-left-enter-active, .slider-left-leave-active {
-  transition: all .8s ease;
-  position: absolute;
-  top: 0;
-}
-.slider-left-enter {
-  transform: translateX(100%);
-}
-.slider-left-leave-to {
-  transform: translateX(-100%);
-}
-
-/* init trans */
-.slider-fade-enter-active{
-  transition: all 2s ease;
-  opacity: 0;
-}
-.slider-fade-enter-to {
-  opacity: 1;
+  /* height: 100%; */
 }
 </style>

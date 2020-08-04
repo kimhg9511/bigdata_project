@@ -29,10 +29,12 @@ export default {
 
 <style scoped>
 .nav-bar {
+  flex-shrink: 0;
   height: 100px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #ddd;
 }
 .nav-items {
   text-align: center;

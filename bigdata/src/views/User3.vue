@@ -1,6 +1,6 @@
 <template>
   <div class="intro">
-    user3
+    워드 클라우드
   </div>
 </template>
 
