@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import * as cloud from "d3-cloud";
 
 function drawSVG(selection, width, height, margin) {
   const svg = selection.append("svg")
@@ -10,75 +11,151 @@ function drawSVG(selection, width, height, margin) {
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
   return plot;
 }   
-
 function setAxis(selection, graphHeight, xScale, yScale) {
   const xAxisGroup = selection.append("g")
     .attr("transform", `translate(0,${graphHeight})`);
   const yAxisGroup = selection.append("g");
   const xAxis = d3.axisBottom(xScale)
-    .ticks(3)
-    .tickFormat(d => d + " orders");
+    .ticks(4)
+    .tickFormat(d => d + " 원");
   const yAxis = d3.axisLeft(yScale);
   xAxisGroup.call(xAxis);
   yAxisGroup.call(yAxis);
   yAxisGroup.selectAll("text")
-    .attr("transform", "rotate(-45)")
+    .style("opacity", 0)
+  yAxisGroup.selectAll("text")
+    .transition()
+    .duration(1200)
+    .delay((d, i) => i * 20)
+    // .attr("transform", "rotate(-45)")
     .attr("text-anchor", "end")
     .attr("fill", "orange")
     .style("font-weight", "bold")
-    .style("font-size", "20px");
+    .style("font-size", "8px")
+    .style("opacity", 1);
+  return { xAxisGroup, yAxisGroup };
 }
-
-function drawPlot(selection, item, xScale, yScale) {
+function drawBarPlot(selection, item, xValue, yValue, xScale, yScale) {
+  console.log("draw");
   const rects = selection
     .selectAll("rect")
     .data(item);
   rects
-    .enter()
     .append("rect")      
-    .attr("width", d=> xScale(d.orders))
-    .attr("height", yScale.bandwidth)
+    .attr("class", "bar-rect")
     .attr("fill", "orange")
     .attr("x", 1)
-    .attr("y", d => yScale(d.name))
+    .attr("height", yScale.bandwidth)
     .on("mouseover", function(){
       d3.select(this)
         .transition()
-        .duration(1200)
-        .attr("width",xScale(1500))
+        .duration(400)
+        .attr("fill", "black")
+        .attr("height", () => yScale.bandwidth() * 1.5)
     })
     .on("mouseout", function(d){
       d3.select(this)
         .transition()
-        .duration(1200)
-        .attr("width", xScale(d.orders))
+        .duration(400)
+        .attr("fill", "orange")
+        .attr("height", yScale.bandwidth)
     })
+    .on("update", function(){
+      console.log(d3.event.detail);
+    })
+    .merge(rects)
+    .transition()
+    .duration(1200)
+    .delay((d,i) => i * 20)
+    .attr("width", d=> xScale(d[xValue]))
+    .attr("y", d => yScale(d[yValue]))
   rects.exit().remove();
+  return rects;
 }
 function drawSlider(selection, xScale) {
   const slider = selection.append("g")
   .attr("class", "slider")
-  // .attr("transform", `translate(${margin.left},${graphHeight/5})`);
   
   slider.append("line")
     .attr("x1", xScale.range()[0])
     .attr("x2", xScale.range()[1])
     .attr("class", "track")
-  .select(function() {
-    // 나의 부모 노드에 나의 클론(deep copy=true)를 자식 노드로 추가한다.
-    return this.parentNode.appendChild(this.cloneNode(true)); 
-  })
+    .select(function() {
+      return this.parentNode.appendChild(this.cloneNode(true)); 
+    })
     .attr("class", "track-inset")
-  .select(function() {
-    return this.parentNode.appendChild(this.cloneNode(true));
-  })
+    .select(function() {
+      return this.parentNode.appendChild(this.cloneNode(true));
+    })
     .attr("class", "track-overlay")
-  .call(d3.drag()
-    .on("start.interrupt", function() { slider.interrupt(); })
-    .on("start drag", function() {
-        currentValue = d3.event.x;
-        update(xScale.invert(currentValue)); 
-      })
-  );
+  return slider;
 }
-export { drawSVG, setAxis, drawPlot, drawSlider }
+function addProgressEvent(selection, step) {
+  let timer;
+  selection.on("click", function() {
+    const button = d3.select(this);
+    if(button.text() == "Pause") {
+      clearInterval(timer);
+      button.text("Play");
+    }
+    else {
+      timer = setInterval(step, 100);
+      button.text("Pause");
+    }
+  })
+  return selection;
+}
+function drawCirclePlot(selection, data, xScale, height) {
+  let locations = selection.selectAll(".location")
+    .data(data);
+  locations.enter()
+    .append("circle")
+    .attr("class", "location")
+    .attr("cx", function(d) { return xScale(d.date); })
+    .attr("cy", height/2)
+    .style("fill", function(d) { return d3.hsl(d.date/1000000000, 0.8, 0.8); })
+    .style("stroke", function(d) { return d3.hsl(d.date/1000000000, 0.7, 0.7); })
+    .style("opacity", 0.5)
+    .attr("r", 8)
+      .transition()
+      .duration(400)
+      .attr("r", 50)
+      .transition()
+      .attr("r", 8);
+  locations.exit().remove();
+
+  return locations;
+}
+function setWordCloud(keywords, spiral, fontSize, fontFamily, size, draw) {
+  const wordCloud = cloud()
+    .size(size)
+    .words(Object.keys(keywords).map(function(d) { return {text: d}; }))
+    .padding(2)
+    .rotate(5)
+    .text(d => d.text)
+    .font(fontFamily)      
+    .fontSize(d => fontSize(keywords[d.text]['count']))
+    .spiral(spiral)
+    .on("end", draw);
+  return wordCloud;
+}
+function preProcess(data, date) {
+  let temp_array = new Array();
+  data.map( el =>{
+    if(el['Date'] === date){
+      temp_array.push(el)
+    };
+  });
+  return temp_array
+}
+// https://www.d3-graph-gallery.com/graph/line_change_data.html
+export { 
+  drawSVG, 
+  setAxis, 
+  drawBarPlot, 
+  drawSlider, 
+  addProgressEvent,
+  drawCirclePlot,
+  setWordCloud,
+  preProcess,
+}

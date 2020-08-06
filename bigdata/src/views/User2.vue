@@ -5,7 +5,7 @@
 
 <script>
 import * as d3 from "d3";
-import {drawSVG, setAxis, drawPlot} from "../assets/drawChart.js"
+import {drawSVG, setAxis, drawBarPlot} from "../assets/drawChart.js"
 
 export default {
   mounted() {
@@ -34,16 +34,15 @@ export default {
           .range([500, 0])
           .paddingInner(0.2)
           .paddingOuter(0.2);
-        
         // axis 생성
         this.setAxis(graph, graphHeight, xScale, yScale)
         // 차트 생성
-        this.drawPlot(graph, item, xScale, yScale)
+        this.drawBarPlot(graph, item, xScale, yScale)
       });        
     },
     drawSVG,
     setAxis,
-    drawPlot
+    drawBarPlot
   }
 }
 </script>
