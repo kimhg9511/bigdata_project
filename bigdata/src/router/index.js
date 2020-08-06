@@ -37,7 +37,7 @@ const routes = [
   {
     path: "/user4",
     name: "User4",
-    component: () => import("../views/User4.vue")
+    component: () => import("../views/User5.vue")
   },
   {
     path: "/final",

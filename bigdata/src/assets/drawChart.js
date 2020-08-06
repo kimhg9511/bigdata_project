@@ -11,30 +11,30 @@ function drawSVG(selection, width, height, margin) {
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
   return plot;
 }   
-function setAxis(selection, graphHeight, xScale, yScale) {
-  const xAxisGroup = selection.append("g")
-    .attr("transform", `translate(0,${graphHeight})`);
-  const yAxisGroup = selection.append("g");
-  const xAxis = d3.axisBottom(xScale)
-    .ticks(4)
-    .tickFormat(d => d + " 원");
-  const yAxis = d3.axisLeft(yScale);
-  xAxisGroup.call(xAxis);
-  yAxisGroup.call(yAxis);
-  yAxisGroup.selectAll("text")
-    .style("opacity", 0)
-  yAxisGroup.selectAll("text")
-    .transition()
-    .duration(1200)
-    .delay((d, i) => i * 20)
-    // .attr("transform", "rotate(-45)")
-    .attr("text-anchor", "end")
-    .attr("fill", "orange")
-    .style("font-weight", "bold")
-    .style("font-size", "8px")
-    .style("opacity", 1);
-  return { xAxisGroup, yAxisGroup };
-}
+// function setAxis(selection, graphHeight, xScale, yScale) {
+//   const xAxisGroup = selection.append("g")
+//     .attr("transform", `translate(0,${graphHeight})`);
+//   const yAxisGroup = selection.append("g");
+//   const xAxis = d3.axisBottom(xScale)
+//     .ticks(4)
+//     .tickFormat(d => d + " 원");
+//   const yAxis = d3.axisLeft(yScale);
+//   xAxisGroup.call(xAxis);
+//   yAxisGroup.call(yAxis);
+//   yAxisGroup.selectAll("text")
+//     .style("opacity", 0)
+//   yAxisGroup.selectAll("text")
+//     .transition()
+//     .duration(1200)
+//     .delay((d, i) => i * 20)
+//     // .attr("transform", "rotate(-45)")
+//     .attr("text-anchor", "end")
+//     .attr("fill", "orange")
+//     .style("font-weight", "bold")
+//     .style("font-size", "8px")
+//     .style("opacity", 1);
+//   return { xAxisGroup, yAxisGroup };
+// }
 function drawBarPlot(selection, item, xValue, yValue, xScale, yScale) {
   console.log("draw");
   const rects = selection
@@ -90,21 +90,7 @@ function drawSlider(selection, xScale) {
     .attr("class", "track-overlay")
   return slider;
 }
-function addProgressEvent(selection, step) {
-  let timer;
-  selection.on("click", function() {
-    const button = d3.select(this);
-    if(button.text() == "Pause") {
-      clearInterval(timer);
-      button.text("Play");
-    }
-    else {
-      timer = setInterval(step, 100);
-      button.text("Pause");
-    }
-  })
-  return selection;
-}
+
 function drawCirclePlot(selection, data, xScale, height) {
   let locations = selection.selectAll(".location")
     .data(data);
@@ -151,10 +137,10 @@ function preProcess(data, date) {
 // https://www.d3-graph-gallery.com/graph/line_change_data.html
 export { 
   drawSVG, 
-  setAxis, 
+  // setAxis, 
   drawBarPlot, 
   drawSlider, 
-  addProgressEvent,
+  // addProgressEvent,
   drawCirclePlot,
   setWordCloud,
   preProcess,

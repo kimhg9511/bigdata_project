@@ -1,27 +1,24 @@
 <template>
-  <div>
-    <div class="progress">
-      <button id="play-button">Play</button>
-    </div>
-    <div class="bar-chart"></div>
+  <div class="user1">
+    <div id="progress-bar"></div>
+    <button id="play-button">Play</button>
+    <div id="bar-chart"></div>
   </div>
 </template>
 
 <script>
 import * as d3 from "d3";
-import { drawSVG, drawSlider, addProgressEvent, drawCirclePlot, setAxis, preProcess } from "../assets/drawChart.js";
-import json from "../../public/data/marcap08052.json";
+import { drawSVG, drawSlider, drawCirclePlot, setAxis, preProcess } from "../assets/drawChart.js";
+import json from "../../public/data/marcap08052.json"
 export default {
-  data() {
-    return {
-      rects: d3.Selection,
-    }
-  },
   mounted() {
     this.drawChart();
   },
   methods: {
     drawChart() {
+/**
+ * slider part
+ */
       const svgWidth = 960;
       const svgHeight = 100;
       const margin = {top:40, right:50, bottom:15, left:50}
@@ -50,7 +47,7 @@ export default {
       const startDate = new Date("2019-01-01 00:00:00");
       const endDate = new Date("2019-12-31 00:00:00");
       // svg 생성
-      const svgProgress = d3.select(".progress");
+      const svgProgress = d3.select("#progress-bar");
       // playButton 지정
       const playButton = d3.select("#play-button");
       // svg 생성
@@ -63,7 +60,6 @@ export default {
       // slider 그리기
       const drawBarChart = this.drawBarChart;
       const slider = drawSlider(progressBar, xScale)
-
       slider.selectAll("text")
         .data(xScale.ticks(12))
         .enter()
@@ -79,13 +75,11 @@ export default {
       let handle = slider.insert("circle", ".track-overlay")
       .attr("class", "handle")
       .attr("r", 9)
-
       let label = slider.append("text")
         .attr("class", "label")
         .attr("text-anchor", "middle")
         .text(formatD3ToDate(startDate))
         .attr("transform", `translate(0,${-25})`)
-
       // 드래그 이벤트
       slider.call(d3.drag()
         .on("start.interrupt", function() { slider.interrupt(); })
@@ -113,56 +107,77 @@ export default {
         label
           .attr("x", xScale(currentHandle))
           .text(formatD3ToDate(currentHandle));
-        // console.log(currentHandle);
         let date = formatD3ToTime(currentHandle);
-        let OneDayData = preProcess(json, date);
+        let OneDayData = preProcess(json, date).slice(11,31);
         if(OneDayData.length !== 0){
           console.log(OneDayData);
-          drawBarPlot(barChart, OneDayData)
+          updateBarPlot(OneDayData)
         }
       }
-      let date = '2019-01-02 00:00:00';
-      let OneDayData = preProcess(json, date);
-      const svgBar = d3.select(".bar-chart");
-      const barWidth = 700;
+/**
+ * barChart part
+ */
+      let date = "2019-01-02 00:00:00";
+      let OneDayData = preProcess(json, date).slice(11,31);
+    
+      const svgBar = d3.select("#bar-chart");
+      const barWidth = 800;
       const barHeight = 300;
-      const margin2 = {top:20, right:20, bottom:40, left:60};
+      const margin2 = {top:20, right:100, bottom:40, left:100};
       const graphWidth2 = barWidth - margin2.right - margin2.left;
       const graphHeight2 = barHeight - margin2.top - margin2.bottom;
       let barChart = drawSVG(svgBar, barWidth, barHeight, margin2);
 
-      const xScaleBar = d3.scaleLinear()
-        .domain([0, d3.max(OneDayData, d => +d.Marcap)])
-        .range([0, graphWidth2]);
-      const yScaleBar = d3.scaleBand()
-        .domain(OneDayData.map(OneDayData => OneDayData.Name))
-        .range([0, graphHeight2])
-        .paddingInner(0.2)
-        .paddingOuter(0.2);
       const xValue = 'Marcap';
       const yValue = 'Name';
       
-      const {xAxisGroup, yAxisGroup} = setAxis(barChart, graphHeight2, xScaleBar, yScaleBar);
-      yAxisGroup.selectAll("text")
-        .on("mouseover", function(){
-          d3.select(this)
-            .transition()
-            .duration(400)
-            .attr("fill", "black")
-            .style("font-size", "20px")
-        })
-        .on("mouseout", function(){
-          d3.select(this)
-            .transition()
-            .duration(400)
-            .attr("fill", "orange")
-            .style("font-size", "8px")
-        })
-      drawBarPlot(barChart, OneDayData); 
-      function drawBarPlot(selection, item) {
+      const xAxisGroup = barChart.append("g")
+        .attr("transform", `translate(0,${graphHeight2})`)
+        .transition().duration(1200);
+      const yAxisGroup = barChart.append("g")
+        .transition().duration(1200);
+      
+      const xScaleBar = d3.scaleLinear();
+      const xAxis = d3.axisBottom(xScaleBar)
+        .ticks(4)
+        .tickFormat(d => d + " 원");
+      const yScaleBar = d3.scaleBand();
+      const yAxis = d3.axisLeft(yScaleBar);
+
+      const rects1 = drawBarPlot(barChart, OneDayData); 
+
+      function updateBarPlot(OneDayData) {
+        xScaleBar 
+          .domain([0, d3.max(OneDayData, d => +d.Marcap)])
+          .range([0, graphWidth2]);
+        yScaleBar
+          .domain(OneDayData.map(OneDayData => OneDayData.Name))
+          .range([0, graphHeight2])
+        xAxisGroup.call(xAxis);
+        yAxisGroup.call(yAxis);
+        const rects = svgBar.select("g").selectAll("rect").data(OneDayData)
+        rects.exit().remove();
+        rects.enter().append("rect")
+        rects.transition()
+          .duration(400)
+          .attr("width", d=> xScaleBar(d[xValue]))
+          .attr("y", d => yScaleBar(d[yValue]))
+
+      }
+      function drawBarPlot(selection, OneDayData) {
+        xScaleBar 
+          .domain([0, d3.max(OneDayData, d => +d.Marcap)])
+          .range([0, graphWidth2]);
+        yScaleBar
+          .domain(OneDayData.map(OneDayData => OneDayData.Name))
+          .range([0, graphHeight2])
+          .paddingInner(0.2)
+          .paddingOuter(0.2);
+        xAxisGroup.call(xAxis);
+        yAxisGroup.call(yAxis);
         const rects = selection
           .selectAll("rect")
-          .data(item);
+          .data(OneDayData);
         rects
           .enter()
           .append("rect")      
@@ -174,26 +189,53 @@ export default {
           .on("mouseover", function(){
             d3.select(this)
               .transition()
-              .duration(400)
+              .duration(10)
               .attr("fill", "black")
               .attr("height", () => yScaleBar.bandwidth() * 1.5)
           })
           .on("mouseout", function(d){
             d3.select(this)
               .transition()
-              .duration(400)
+              .duration(10)
               .attr("fill", "orange")
               .attr("height", yScaleBar.bandwidth)
           })
-          .on("update", function(){
-            console.log(d3.event.detail);
-          })
           .transition()
-          .duration(1200)
+          .duration(10)
           .delay((d,i) => i * 20)
           .attr("width", d=> xScaleBar(d[xValue]))
         rects.exit().remove();
+        
+        yAxisGroup.selectAll("text")
+          .style("opacity", 0)
+        yAxisGroup.selectAll("text") 
+          .transition()
+          .duration(10)
+          .delay((d, i) => i * 20)
+          // .attr("transform", "rotate(-45)")
+          .attr("text-anchor", "end")
+          .attr("fill", "orange")
+          .style("font-weight", "bold")
+          .style("font-size", "8px")
+          .style("opacity", 1)
+
         return rects;
+      }
+
+      function addProgressEvent(selection, step) {
+        let timer;
+        selection.on("click", function() {
+          const button = d3.select(this);
+          if(button.text() == "Pause") {
+            clearInterval(timer);
+            button.text("Play");
+          }
+          else {
+            timer = setInterval(step, 400);
+            button.text("Pause");
+          }
+        })
+        return selection;
       }
     },
   }
@@ -201,9 +243,13 @@ export default {
 </script>
 
 <style>
-.progress {
+.user1 {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+.svg-wrap {
+  width: 100%;
 }
 /* 버튼 설정 */
 #play-button {
