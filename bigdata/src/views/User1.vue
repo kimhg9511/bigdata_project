@@ -60,17 +60,6 @@ export default {
       // slider 그리기
       const drawBarChart = this.drawBarChart;
       const slider = drawSlider(progressBar, xScale)
-      slider.selectAll("text")
-        .data(xScale.ticks(12))
-        .enter()
-        .append("text")
-        .attr("x", (d,i) => {
-          return i * graphWidth / 12;
-        })
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "12px")
-        .text(function(d) { return formatD3ToMonth(d); })
 
       let handle = slider.insert("circle", ".track-overlay")
       .attr("class", "handle")
@@ -84,29 +73,48 @@ export default {
       slider.call(d3.drag()
         .on("start.interrupt", function() { slider.interrupt(); })
         .on("start drag", function() {
-            currentValue = d3.event.x;
-            update(xScale.invert(currentValue)); 
-          })
+          currentValue = d3.event.x;
+          updateSlider(xScale.invert(currentValue));
+        })
+        .on("end", function() {
+          updateChart(xScale.invert(currentValue))
+        })
+          // .container(slider)
+          // .subject()
         );
+
+      slider.selectAll("text")
+        .data(xScale.ticks(12))
+        .enter()
+        .append("text")
+        .attr("x", (d,i) => {
+          return i * graphWidth / 12;
+        })
+        .attr("y", 30)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .text(function(d) { return formatD3ToMonth(d); })
 
       addProgressEvent(playButton, step);
       // progress bar를 play button클릭으로 한칸씩 이동시키는 함수
       function step() {
-        update(xScale.invert(currentValue));
+        updateSlider(xScale.invert(currentValue));
+        updateChart(xScale.invert(currentValue));
         currentValue = currentValue + (targetValue/151);
         if(currentValue > targetValue) {
           currentValue = 0;
           playButton.dispatch("click");
-          // update(xScale.invert(currentValue));
         }
       }
       // progress bar와 circle plot 업데이트 이벤트 함수
-      function update(currentHandle) {
+      function updateSlider(currentHandle) {
         handle
           .attr("cx", xScale(currentHandle));
         label
           .attr("x", xScale(currentHandle))
           .text(formatD3ToDate(currentHandle));
+      }
+      function updateChart(currentHandle) {
         let date = formatD3ToTime(currentHandle);
         let OneDayData = preProcess(json, date).slice(11,31);
         if(OneDayData.length !== 0){
@@ -144,6 +152,11 @@ export default {
       const yScaleBar = d3.scaleBand();
       const yAxis = d3.axisLeft(yScaleBar);
 
+      const colorScale = d3.scaleLinear()
+        .domain([0, 50])
+        .range(["#222","#ccc"])
+        .clamp(true);
+
       const rects1 = drawBarPlot(barChart, OneDayData); 
 
       function updateBarPlot(OneDayData) {
@@ -152,17 +165,28 @@ export default {
           .range([0, graphWidth2]);
         yScaleBar
           .domain(OneDayData.map(OneDayData => OneDayData.Name))
-          .range([0, graphHeight2])
-        xAxisGroup.call(xAxis);
-        yAxisGroup.call(yAxis);
-        const rects = svgBar.select("g").selectAll("rect").data(OneDayData)
-        rects.exit().remove();
+          .range([0, graphHeight2]);
+        let rects = svgBar.select("g").selectAll("rect")
+        rects
+          // .attr("fill", (d,i) => colorScale(i))
+          .attr("y", d => {
+            return yScaleBar(d[yValue])
+          });
+        rects = svgBar.select("g").selectAll("rect").data(OneDayData)
+        rects.exit().remove()
         rects.enter().append("rect")
         rects.transition()
           .duration(400)
+          .attr("fill", (d,i) => colorScale(i))
           .attr("width", d=> xScaleBar(d[xValue]))
-          .attr("y", d => yScaleBar(d[yValue]))
-
+          .attr("y", d => {
+            return yScaleBar(d[yValue])
+          })
+        rects.on("click", (d,i) => {
+          console.log(d);
+        })
+        xAxisGroup.call(xAxis);
+        yAxisGroup.call(yAxis);
       }
       function drawBarPlot(selection, OneDayData) {
         xScaleBar 
@@ -182,32 +206,32 @@ export default {
           .enter()
           .append("rect")      
           .attr("class", "bar-rect")
-          .attr("fill", "orange")
+          .attr("fill", (d,i) => colorScale(i))
           .attr("x", 1)
-          .attr("y", d => yScaleBar(d[yValue]))
+          .attr("y", d =>{ 
+            console.log(d[yValue]);
+            return yScaleBar(d[yValue])
+          })
           .attr("height", yScaleBar.bandwidth)
-          .on("mouseover", function(){
-            d3.select(this)
-              .transition()
-              .duration(10)
-              .attr("fill", "black")
-              .attr("height", () => yScaleBar.bandwidth() * 1.5)
-          })
-          .on("mouseout", function(d){
-            d3.select(this)
-              .transition()
-              .duration(10)
-              .attr("fill", "orange")
-              .attr("height", yScaleBar.bandwidth)
-          })
+          // .on("mouseover", function(){
+          //   d3.select(this)
+          //     .transition()
+          //     .duration(10)
+          //     .attr("fill", "black")
+          //     .attr("height", () => yScaleBar.bandwidth() * 1.5)
+          // })
+          // .on("mouseout", function(d){
+          //   d3.select(this)
+          //     .transition()
+          //     .duration(10)
+          //     .attr("fill", "orange")
+          //     .attr("height", yScaleBar.bandwidth)
+          // })
           .transition()
           .duration(10)
           .delay((d,i) => i * 20)
           .attr("width", d=> xScaleBar(d[xValue]))
         rects.exit().remove();
-        
-        yAxisGroup.selectAll("text")
-          .style("opacity", 0)
         yAxisGroup.selectAll("text") 
           .transition()
           .duration(10)

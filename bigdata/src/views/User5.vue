@@ -69,6 +69,8 @@ export default {
       .attr("r",function(d,i){return d});
       d3.select("text").text("dataset"+dataIndex);
       });//end click function
+
+      console.log(d3.local());
     }
   }
 }

@@ -26,7 +26,6 @@ export default {
   },
   methods: {
     generateCloud(keywords, spiral, fontFamily){
-      console.log(keywords);
       // 데이터셋
       const mainKeywords = Object.keys(keywords);
       let counts = mainKeywords.map(elem => keywords[elem]['count']);
@@ -61,6 +60,10 @@ export default {
           .text(d => d.text)
           .attr("text-anchor", "middle")
           .attr("class", "cloud-item")
+          // .attrs({
+          //   textAnchor: () => "middle",
+          //   class: () => "cloud-item"
+          // })
           .style("fill", (d,i) => colors[i%colors.length])
           .style("font-size", d => {
             return fontSizeScale(keywords[d.text]['count']);
@@ -77,7 +80,6 @@ export default {
           .attr("transform", d => 
             `translate(${[d.x, d.y]})rotate(${d.rotate})`
           )
-
       }
     },
     generateBox(text){
