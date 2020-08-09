@@ -35,6 +35,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   background-color: #ddd;
+  box-shadow: inset 0 -4px 6px 0 rgba(0,0,0,0.1);
 }
 .nav-items {
   text-align: center;

@@ -18,12 +18,28 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #app-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow-x: hidden;
+  overflow: hidden;
 }
+.svg-container {
+  position: relative;
+  width: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-container:before {
+  content: "";
+  display: block;
+}
+.svg-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 </style>
