@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { loadJson } from "../api/utils.js"
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -38,6 +39,7 @@ export default new Vuex.Store({
       //   name: "skip"
       // }
     ],
+    data_cloud: {},
   },
   getters: {
     urls(state) {
@@ -45,10 +47,18 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-
+    SET_DATA_CLOUD(state, data_cloud) {
+      state.data_cloud = data_cloud;
+    }
   },
   actions: {
-
+    LOAD_JSON_CLOUD({ commit }, fileName) {
+      return loadJson(fileName)
+        .then(({data}) => {
+          commit('SET_DATA_CLOUD', data)
+        })
+        .catch(error => console.log(error));
+    }
   },
   modules: {}
 });

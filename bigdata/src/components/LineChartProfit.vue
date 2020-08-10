@@ -1,6 +1,6 @@
 <template>
   <div id="line-chart-profit">
-
+    
   </div>
 </template>
 
@@ -10,9 +10,8 @@ export default {
     this.drawLineChart()
   },
   methods: {
-    drawLineChart() {
-
-    }
+    drawBarChart() {
+    },
   }
 }
 </script>

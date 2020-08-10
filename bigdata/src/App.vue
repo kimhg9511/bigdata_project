@@ -15,6 +15,9 @@ export default {
     AppMain,
     AppFooter
   },
+  created() {
+    this.$store.dispatch('LOAD_JSON_CLOUD', "data/rtop20_stocks20200707.json");
+  }
 }
 </script>
 

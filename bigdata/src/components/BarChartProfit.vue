@@ -111,7 +111,6 @@ export default {
 
 <style scoped>
 #bar-chart-profit {
-  width: 50%;
   padding-top: 25%;
 }
 </style>

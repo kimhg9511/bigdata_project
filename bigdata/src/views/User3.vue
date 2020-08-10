@@ -8,6 +8,9 @@
 import * as d3 from "d3"
 import WordCloud from "../components/WordCloud"
 export default {
+  components: {
+    WordCloud
+  },
   data() {
     return {
       data: Object,
@@ -15,9 +18,6 @@ export default {
   },
   mounted() {
     this.setContent();
-  },
-  components: {
-    WordCloud
   },
   methods: {
     setContent() {
