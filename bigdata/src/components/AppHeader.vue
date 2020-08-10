@@ -40,14 +40,14 @@ export default {
 .nav-items {
   text-align: center;
 }
-.nav-items:first-of-type, .nav-items:last-of-type{
+.nav-items:first-of-type/*, .nav-items:last-of-type*/{
   width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
 }
-.nav-items:not(:first-of-type).nav-items:not(:last-of-type){
+.nav-items:not(:first-of-type)/*.nav-items:not(:last-of-type)*/{
   flex-grow: 1;
 }
 </style>

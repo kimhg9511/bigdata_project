@@ -72,18 +72,21 @@ export default {
         .attr("viewBox", `0 0 ${chart.width} ${chart.height}`)
         .classed("svg-content", true)
       const playButton = svgSlider.append("g")
+      playButton
         .append("rect")
         .attr("width", "100")
         .attr("height", "30")
         .attr("x", "45%")
-        .attr("y", "60%")
-        .attr("fill", "#ddd")
+        .attr("y", "70%")
+        .attr("fill", "skyblue")
       playButton
         .append("text")
-        // .attr("x", "50%")
-        // .attr("y", "80%")
+        .attr("x", "50%")
+        .attr("y", "90%")
         .attr("text-anchor","middle")
-        .text("play")
+        .attr("fill", "white")
+        .style("font-weight", "bold")
+        .text("Play")
       // xScale값 지정(slider)
       const xScale = d3.scaleTime()
         .domain([startDate, endDate])
@@ -122,11 +125,12 @@ export default {
           updateSlider(xScale.invert(currentValue));
         })
         .on("end", function() {
-          updateChart(xScale.invert(currentValue))
+          let date = formatD3ToTime(xScale.invert(currentValue));
+          d3.selectAll("#bar-chart-marcap>svg>g").dispatch("update",{detail: {date}});
         })
-          // .container(slider)
-          // .subject()
-        );
+        // .container(slider)
+        // .subject()
+      );
 
       slider.selectAll("text")
         .data(xScale.ticks(12))
@@ -145,22 +149,23 @@ export default {
       function addProgressEvent(selection, step) {
         let timer;
         selection.on("click", function() {
-          const button = d3.select(this);
+          const button = d3.select(this).select("text");
           if(button.text() == "Pause") {
-            clearInterval(timer);
-            // button.text("Play");
+            clearInterval(timer);            
+            button.text("Play");
           }
           else {
-            timer = setInterval(step, 400);
-            // button.text("Pause");
+            timer = setInterval(step, 500);
+            button.text("Pause");
           }
         })
         return selection;
       }
       function step() {
         updateSlider(xScale.invert(currentValue));
-        // updateChart(xScale.invert(currentValue));
-        currentValue = currentValue + (targetValue/151);
+        let date = formatD3ToTime(xScale.invert(currentValue));
+        d3.selectAll("#bar-chart-marcap>svg>g").dispatch("update",{detail: {date}});
+        currentValue = currentValue + (targetValue/363.9999);
         if(currentValue > targetValue) {
           currentValue = 0;
           playButton.dispatch("click");
@@ -182,7 +187,7 @@ export default {
 <style>
 #slider-wrap {
   position: relative;
-  padding-top: 15%;
+  padding-top: 12.5%;
 }
 /* progress bar 트랙 설정 */
 .ticks {

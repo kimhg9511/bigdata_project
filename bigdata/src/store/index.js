@@ -14,29 +14,29 @@ export default new Vuex.Store({
         name: "intro"
       },
       {
+        url: "dashboard",
+        name: "대시보드"
+      },
+      {
         url: "user1",
-        name: "유저1"
+        name: "일자별 시총 순위"
       },
       {
         url: "user2",
-        name: "유저2"
+        name: "월별 수익률"
       },
       {
         url: "user3",
-        name: "유저3"
+        name: "코인 커뮤니티 키워드"
       },
-      {
-        url: "user4",
-        name: "유저4"
-      },
-      {
-        url: "final",
-        name: "결론"
-      },
-      {
-        url: "skip",
-        name: "skip"
-      }
+      // {
+      //   url: "user4",
+      //   name: "유저4"
+      // },
+      // {
+      //   url: "skip",
+      //   name: "skip"
+      // }
     ],
   },
   getters: {

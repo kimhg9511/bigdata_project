@@ -4,7 +4,7 @@
     class="cards"
     name="cards"
   >
-    <div v-for="card in cards" v-bind:key="card.name" class="card-item">
+    <div v-for="card in cards" :key="card.name" class="card-item">
       {{ card.name }}
     </div>
   </transition-group>
@@ -27,7 +27,10 @@ export default {
         {
           name: 'd'
         },
-      ]
+      ],
+      mouseover: {
+        'background-color': "#fff"
+      }
     }
   }
 };
@@ -35,7 +38,6 @@ export default {
 
 <style scoped>
 .cards {
-  background-color: #ccc;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -49,7 +51,11 @@ export default {
   font-size: 5rem;
   font-weight: bold;
   background-color: #bbb;
-  /* transition: all 1s; */
+  /* transition: all 0.8s; */
+}
+.card-item:hover {
+  background-color: #fff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, 0.19)
 }
 /* .cards-enter-active {
 } */

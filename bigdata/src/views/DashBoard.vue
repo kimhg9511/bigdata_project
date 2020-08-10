@@ -1,20 +1,25 @@
 <template>
   <div id="dashboard-wrap">
-    <div class="row">
-      <chart-slider class="chart-card col-12"></chart-slider>
+    <div class="group">
+      <div class="row">
+        <chart-slider class="chart-card col-12"></chart-slider>
+        <div class="row">
+          <word-cloud class="chart-card col-6"></word-cloud>    
+          <bar-chart-profit class="chart-card col-6"></bar-chart-profit>
+        </div>
+      </div>
+      <div class="row">
+        <bar-chart-marcap class="chart-card col-12"></bar-chart-marcap>
+      </div>
     </div>
-    <div class="row">
-      <word-cloud class="chart-card col-6"></word-cloud>    
-      <bar-chart class="chart-card col-6"></bar-chart>
+    <div class="row notebook">
+      <div class="chart-card col-4">member1 notebook</div>
+      <div class="chart-card col-4">member2 notebook</div>   
+      <div class="chart-card col-4">member3 notebook</div>
     </div>
-    <div class="row">
-      <div class="chart-card col-4">member1 notebook here</div>
-      <div class="chart-card col-4">member2 notebook here</div>
-      <div class="chart-card col-4">member3 notebook here</div>
-    </div>
-    <div class="row">
-      <div class="chart-card col-3">empty</div>
-      <div class="chart-card col-3">empty</div>
+    <div class="row information">
+      <div class="chart-card col-3">현재시각<br>00-00-00 00:00:00</div>
+      <div class="chart-card col-3">차트시각<br>00-00-00 00:00:00</div>
       <div class="chart-card col-3">empty</div>
       <div class="chart-card col-3">empty</div>
     </div>
@@ -23,13 +28,14 @@
 
 <script>
 import ChartSlider from "../components/ChartSlider"
-import BarChart from "../components/BarChart";
+import BarChartProfit from "../components/BarChartProfit";
 import WordCloud from "../components/WordCloud";
-
+import BarChartMarcap from "../components/BarChartMarcap"
 export default {
   components: {
     ChartSlider,
-    BarChart,
+    BarChartProfit,
+    BarChartMarcap,
     WordCloud
   }
 }
@@ -44,22 +50,46 @@ export default {
   display: flex;
   flex-flow: row wrap;
 }
-.chart-card{
-  flex: 0 1 auto;
+.chart-card {
   background-color: #fff;
-  margin: 0.33%;
+  margin: 0.5%;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+.notebook {
+  height: 30%;
+}
+.notebook>div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 2rem;
+}
+.information {
+  height: 23%;
+}
+.information>div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.5rem;
+}
 .col-12 {
-  width: 99.33%;
+  width: 99%;
 }
 .col-6 {
-  width: 49.33%;
+  width: 49%;
 }
 .col-4 {
-  width: 32.67%;
+  width: 32.33%;
 }
 .col-3 {
-  width: 24.33%;
+  width: 24%;
+}
+@media screen and (min-width: 1025px) {
+.group {
+  display: flex;
+}
 }
 </style>

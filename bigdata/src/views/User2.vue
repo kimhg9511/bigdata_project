@@ -1,16 +1,21 @@
 <template>
-  <bar-chart></bar-chart>
+  <div id="user2">
+    <bar-chart-profit></bar-chart-profit>
+  </div>
 </template>
 
 <script>
-import BarChart from "../components/BarChart"
+import BarChartProfit from "../components/BarChartProfit"
 
 export default {
   components: {
-    BarChart
+    BarChartProfit
   }
 }
 </script>
 
 <style scoped>
+#bar-chart-profit {
+  height: 100%;
+}
 </style>

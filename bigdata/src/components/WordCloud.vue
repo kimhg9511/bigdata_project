@@ -67,7 +67,7 @@ export default {
       setLayout(data);  
       setInterval(function(){
         setLayout(data);
-      },2000) 
+      },4000) 
       function setLayout(data) {
         cloud()
           .size([chart.graphWidth(), chart.graphHeight()])
@@ -85,6 +85,7 @@ export default {
         let cloud = svg
           .selectAll("text")
           .data(words)
+
         cloud.enter().append("text")
           .text(d => d.text)
           .attr("text-anchor", "middle")
@@ -94,6 +95,10 @@ export default {
             return fontSizeScale(keywords[d.text]['count']);
           })
           .style("font-family", d => d.font)
+          .on("click", (d) => {
+            console.dir(d);
+            d3.select("#content-box").dispatch("update", {detail: {data: d}})
+          })
           .transition()
           .duration(800)
           .delay((d, i) => i * 20)

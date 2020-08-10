@@ -125,23 +125,15 @@ function setWordCloud(keywords, spiral, fontSize, fontFamily, size, draw) {
     .on("end", draw);
   return wordCloud;
 }
-function preProcess(data, date) {
-  let temp_array = new Array();
-  data.map( el =>{
-    if(el['Date'] === date){
-      temp_array.push(el)
-    };
-  });
-  return temp_array
-}
+
 // https://www.d3-graph-gallery.com/graph/line_change_data.html
 export { 
-  drawSVG, 
-  // setAxis, 
-  drawBarPlot, 
-  drawSlider, 
-  // addProgressEvent,
-  drawCirclePlot,
-  setWordCloud,
-  preProcess,
+  // drawSVG, 
+  // // setAxis, 
+  // drawBarPlot, 
+  // drawSlider, 
+  // // addProgressEvent,
+  // drawCirclePlot,
+  // setWordCloud,
+  // preProcess,
 }

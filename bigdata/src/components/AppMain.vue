@@ -49,10 +49,23 @@ export default {
         : 0;
     }
   },
+  mounted() {
+    const goToPrev = this.goToPrev;
+    const goToNext = this.goToNext;
+    window.addEventListener('keyup', function(event) {
+      if (event.keyCode === 37) { 
+        goToPrev();
+      }
+      else if (event.keyCode === 39) { 
+        goToNext();
+      }
+      else {
+        return;
+      }
+    });
+  },
   methods: {
     setTransition(el){
-      console.log(this.prev);
-      console.log(this.next);
       // this.$store.commit()
       if(this.url == "intro") {
         const childs = [...el.childNodes];
@@ -74,6 +87,14 @@ export default {
           ,300*index)
         });
       }
+    },
+    goToPrev(){
+      const prev = this.prev || "intro";
+      this.$router.push(prev)
+    },
+    goToNext(){
+      const next = this.next || "home";
+      this.$router.push(next)
     }
   },
   // 캐러셀 슬라이드 방향 결정
@@ -90,17 +111,19 @@ export default {
         this.direction = toIdx > fromIdx ? 'left' : 'right';
       }
     }
-  }
+  },
 }
 </script>
 
 <style scoped>
 #carousel {
+  padding: 0.5%;
   min-height: 600px;
   flex-grow: 1;
   position: relative;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: overlay;
+  background-color: #ccc;
 }
 .carousel-slide {
   transition: background-color 0.4s;
@@ -125,17 +148,17 @@ export default {
   /* height: 100%; */
 }
 ::-webkit-scrollbar {
-  width: 10px;  /*세로축 스크롤바 길이*/
+  width: 4px;  /*세로축 스크롤바 길이*/
   /* height: 20px;  가로축 스크롤바 길이 */
 }
 ::-webkit-scrollbar-track {
-  background-color: inherit;
+  background-color: rgba(255, 255, 255, 0);
 }
 /* ::-webkit-scrollbar-track-piece {
   background-color: gray;
 } */
 ::-webkit-scrollbar-thumb {
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #333;
 }
 /* ::-webkit-scrollbar-button {
