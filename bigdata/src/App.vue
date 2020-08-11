@@ -16,7 +16,9 @@ export default {
     AppFooter
   },
   created() {
-    this.$store.dispatch('LOAD_JSON_CLOUD', "data/rtop20_stocks20200707.json");
+    this.$store.dispatch("LOAD_JSON_CLOUD", "rtop20_stocks20200707.json")
+    this.$store.dispatch("LOAD_CSV_LINE_PROFIT", "profit4.csv")
+    this.$store.dispatch("LOAD_CSV_BAR_PROFIT", "each.csv")
   }
 }
 </script>

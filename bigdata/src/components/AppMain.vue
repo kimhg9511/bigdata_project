@@ -1,22 +1,23 @@
 <template>
   <div id="carousel">
-    <router-link 
+    <!-- <router-link 
       v-if="currentIdx != 0"
       :to="prev ? prev : ''"
       class="carousel-slide left"
-    />
+    /> -->
     <transition
       :name="`slider-${this.direction}`"
+      mode="out-in"
       @before-enter="setTransition"
-      @after-enter="triggerTransition"
+      @enter="triggerTransition"
     >
       <router-view id="wrap"/>
     </transition>
-    <router-link
+    <!-- <router-link
       v-if="currentIdx != domains.length-1"
       :to="next ? next : ''"
       class="carousel-slide right"
-    />
+    /> -->
   </div>
 </template>
 
@@ -66,7 +67,6 @@ export default {
   },
   methods: {
     setTransition(el){
-      // this.$store.commit()
       if(this.url == "intro") {
         const childs = [...el.childNodes];
         childs.map((item)=> {
@@ -76,7 +76,7 @@ export default {
         });
       }
     },
-    triggerTransition(el){
+    triggerTransition(el, done){
       if(this.url == "intro") {
         const childs = [...el.childNodes];
         childs.map((item, index)=> {
@@ -84,8 +84,9 @@ export default {
             item.style.opacity = "1"
             item.style.transform = "translateX(0)"
           }
-          ,300*index)
+          ,400*index)
         });
+        done();
       }
     },
     goToPrev(){
@@ -142,44 +143,15 @@ export default {
 .right {
   right: 0;
 }
-#carousel>#wrap {
-  width: 100%;
-  height: 100%;
-  /* height: 100%; */
-}
+
 ::-webkit-scrollbar {
-  width: 4px;  /*세로축 스크롤바 길이*/
-  /* height: 20px;  가로축 스크롤바 길이 */
+  width: 4px;
 }
 ::-webkit-scrollbar-track {
   background-color: rgba(255, 255, 255, 0);
 }
-/* ::-webkit-scrollbar-track-piece {
-  background-color: gray;
-} */
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: #333;
 }
-/* ::-webkit-scrollbar-button {
-  background-color: darkblue;
-  width: 20px;
-  height: 10px;
-} */
-/* ::-webkit-scrollbar-button:start {
-  background-color: red; Top, Left 방향의 이동버튼
-}
-::-webkit-scrollbar-button:end {
-  background-color: orange; Bottom, Right 방향의 이동버튼
-} */
-/* ::-webkit-scrollbar-button:vertical:increment {
-}
-::-webkit-scrollbar-button:vertical:decrement {
-} */
-/* ::-webkit-scrollbar-corner {
-  background-color: violet; 우측 하단의 코너 부분
-}
-::-webkit-resizer {
-  background-color: green;
-} */
 </style>

@@ -1,8 +1,9 @@
 import axios from 'axios';
-
-function loadJson(fileName) {
-  return axios.get(fileName);
+const baseUrl = "data"
+function loadFile(fileName) {
+  // console.log("loadFile called...");
+  return axios.get(`${baseUrl}/${fileName}`)
 }
 export {
-  loadJson,
+  loadFile,
 }

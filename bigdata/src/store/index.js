@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { loadJson } from "../api/utils.js"
+import { loadFile } from "../api/utils.js"
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -30,16 +30,10 @@ export default new Vuex.Store({
         url: "user3",
         name: "코인 커뮤니티 키워드"
       },
-      // {
-      //   url: "user4",
-      //   name: "유저4"
-      // },
-      // {
-      //   url: "skip",
-      //   name: "skip"
-      // }
     ],
-    data_cloud: {},
+    dataCloud: {},
+    dataLineProfit: [],
+    dataBarProfit: []
   },
   getters: {
     urls(state) {
@@ -47,15 +41,39 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    SET_DATA_CLOUD(state, data_cloud) {
-      state.data_cloud = data_cloud;
+    SET_DATA_CLOUD(state, dataCloud) {
+      state.dataCloud = dataCloud;
+    },
+    SET_CSV_LINE_PROFIT(state, dataLineProfit) {
+      state.dataLineProfit = dataLineProfit.slice(1,-1);
+    },
+    SET_CSV_BAR_PROFIT(state, dataBarProfit) {
+      state.dataBarProfit = dataBarProfit.slice(1,-1);
     }
   },
   actions: {
     LOAD_JSON_CLOUD({ commit }, fileName) {
-      return loadJson(fileName)
+      return loadFile(fileName)
         .then(({data}) => {
           commit('SET_DATA_CLOUD', data)
+        })
+        .catch(error => console.log(error));
+    },
+    LOAD_CSV_LINE_PROFIT({ commit }, fileName) {
+      // console.log("line action called...");
+      return loadFile(fileName)
+        .then(({data}) => {
+          const dataLineProfit = data.split("\n").map(el => el.split(","));
+          commit('SET_CSV_LINE_PROFIT', dataLineProfit)
+        })
+        .catch(error => console.log(error));
+    },
+    LOAD_CSV_BAR_PROFIT({ commit }, fileName) {
+      // console.log("line action called...");
+      return loadFile(fileName)
+        .then(({data}) => {
+          const dataBarProfit = data.split("\n").map(el => el.split(","));
+          commit('SET_CSV_BAR_PROFIT', dataBarProfit)
         })
         .catch(error => console.log(error));
     }

@@ -1,10 +1,5 @@
 <template>
   <div id="text-cloud">
-    <!-- <svg>
-      <g>
-        <text></text>
-      </g>
-    </svg> -->
   </div>
 </template>
 <script>
@@ -14,7 +9,7 @@ export default {
   name: "word-cloud",
   data() {
     return { 
-      data : this.$store.state.data_cloud,
+      data : this.$store.state.dataCloud,
       texts: '',
       width: 500,
       height: 300,
@@ -51,7 +46,6 @@ export default {
   },
   methods: {
     generateCloud(){
-      console.log(d3cloud);
       const setLayout = this.setLayout;
       // 글자 크기 스케일
       const scale = this.setScales(this.cMin, this.cMax);
@@ -68,13 +62,16 @@ export default {
       // const data = Object.keys(keywords).map(function(d) { 
       //   return {text: d}; 
       // });
-      let data = [];
+      let data = [{'name':'','count':''}];
       for (let i=0;i<this.keywords.length;i++){
-        data[this.keywords[i]] = this.wordCounts[i];
+        data[i] = {
+          "name": this.keywords[i],
+          "count": this.wordCounts[i]
+        }
       }
       svg.call(setLayout, data, scale);  
       // setInterval(function(){
-      //   setLayout(data, scale);
+      //   svg.call(setLayout, data, scale);
       // },4000) 
     },
     setScales(cMin, cMax) {
@@ -88,49 +85,39 @@ export default {
       return {font, color}
     },
     setLayout(selection, data, scale) {
-      console.log("setLayout called");
       const cloud = d3cloud()
         .size([this.graphWidth, this.graphHeight])
         .words(data)
         .padding(2)
         .rotate(0)
-        .text(d => {
-          d.text
-        })
+        .text(d => d.name)
         .font('monospace')      
-        .fontSize(d => scale.font(keywords[d.text]['count']))
-        .on("end", this.draw(data, selection, scale))
+        .fontSize(d => scale.font(d.count))
+        .on("end", data => {
+          this.draw(data, scale, selection)
+        })
         .start();
     },
-    draw(data, selection, scale) {
-      console.log("draw called");
-      let cloud = selection
-        .selectAll("text")
-        .data(data)
+    draw(words, scale, selection) {
+      const cloud = selection.selectAll("text").data(words);
       cloud.enter().append("text")
-        .text(d => {
-          console.log(d);
-          d.text
-        })
+        .text(d => d.text)
         .attr("text-anchor", "middle")
         .attr("class", "cloud-item")
+        // .style("fill", "black")
         .style("fill", d => scale.color(d.size))
-        .style("font-size", d => {
-          console.log(d);
-          return scale.font(keywords[d.text]['count']);
+        .style("font-size", d => d.size)
+        .style("font-family", d => d.size)
+        .on("click", (d) => {
+          d3.select("#content-box").dispatch("update", {detail: {data: d}})
         })
-        .style("font-family", d => d.font)
-        // .on("click", (d) => {
-        //   console.dir(d);
-        //   d3.select("#content-box").dispatch("update", {detail: {data: d}})
-        // })
         .transition()
         .duration(800)
         .delay((d, i) => i * 20)
         .attr("transform", d => 
           `translate(${[d.x, d.y]})rotate(${d.rotate})`
         )
-      // cloud.exit().remove()
+      cloud.exit().remove()
       cloud
         .transition()
         .duration(800)
@@ -139,9 +126,6 @@ export default {
           `translate(${[d.x, d.y]})rotate(${d.rotate})`
         )
     }
-    // generateBox(text){
-    //   this.texts = text
-    // },
   }
 }
 </script>

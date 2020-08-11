@@ -9,11 +9,12 @@ import * as d3 from "d3"
 import WordCloud from "../components/WordCloud"
 export default {
   components: {
-    WordCloud
+    WordCloud,
   },
   data() {
     return {
       data: Object,
+      componentKey : 0,
     }
   },
   mounted() {
@@ -26,7 +27,7 @@ export default {
         .on("update", () => {
           self.data = d3.event.detail.data;
         })
-    }
+    },
   }
 }
 </script>
@@ -37,9 +38,9 @@ export default {
   justify-content: start;
 }
 #text-cloud {
-  width: 50%;
+  width: 70%;
 }
 #content-box {
-  width: 50%;
+  width: 30%;
 }
 </style>

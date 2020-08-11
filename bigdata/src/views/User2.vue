@@ -1,7 +1,9 @@
 <template>
-  <div id="monthly-profits">
-    <bar-chart-profit></bar-chart-profit>
-    <line-chart-profit></line-chart-profit>
+  <div>
+    <div id="monthly-profits">
+      <line-chart-profit></line-chart-profit>
+      <bar-chart-profit></bar-chart-profit>
+    </div>
   </div>
 </template>
 
@@ -21,6 +23,9 @@ export default {
   display: flex;
 }
 #bar-chart-profit {
+  width: 50%;
+}
+#line-chart-profit {
   width: 50%;
 }
 </style>
