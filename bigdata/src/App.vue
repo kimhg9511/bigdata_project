@@ -42,6 +42,7 @@ export default {
   display: block;
 }
 .svg-content {
+  background-color: #fff; 
   position: absolute;
   top: 0;
   left: 0;

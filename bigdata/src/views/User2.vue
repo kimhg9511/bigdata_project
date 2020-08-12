@@ -1,8 +1,8 @@
 <template>
   <div>
     <div id="monthly-profits">
-      <line-chart-profit></line-chart-profit>
-      <bar-chart-profit></bar-chart-profit>
+      <line-chart-profit @change="changeMonth"></line-chart-profit>
+      <bar-chart-profit :month="month"></bar-chart-profit>
     </div>
   </div>
 </template>
@@ -11,9 +11,19 @@
 import BarChartProfit from "../components/BarChartProfit"
 import LineChartProfit from "../components/LineChartProfit"
 export default {
+  data() {
+    return {
+      month: ""
+    }
+  },
   components: {
     BarChartProfit,
     LineChartProfit,
+  },
+  methods: {
+    changeMonth(newMonth) {
+      this.month = newMonth;
+    }
   }
 }
 </script>

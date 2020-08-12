@@ -5,7 +5,7 @@
         <chart-slider class="chart-card col-12"></chart-slider>
         <div class="row">
           <word-cloud class="chart-card col-6"></word-cloud>    
-          <bar-chart-profit class="chart-card col-6"></bar-chart-profit>
+          <bar-chart-profit class="chart-card col-6" :month="'Jan-19'"></bar-chart-profit>
         </div>
       </div>
       <div class="row">

@@ -70,9 +70,9 @@ export default {
         }
       }
       svg.call(setLayout, data, scale);  
-      // setInterval(function(){
-      //   svg.call(setLayout, data, scale);
-      // },4000) 
+      setInterval(function(){
+        svg.call(setLayout, data, scale);
+      },4000) 
     },
     setScales(cMin, cMax) {
       const font = d3.scalePow()
@@ -104,10 +104,9 @@ export default {
         .text(d => d.text)
         .attr("text-anchor", "middle")
         .attr("class", "cloud-item")
-        // .style("fill", "black")
         .style("fill", d => scale.color(d.size))
         .style("font-size", d => d.size)
-        .style("font-family", d => d.size)
+        .style("font-family", d => d.font)
         .on("click", (d) => {
           d3.select("#content-box").dispatch("update", {detail: {data: d}})
         })
@@ -130,8 +129,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+@font-face {
+  font-family: "ksh";
+  src: url("../fonts/KaushanScript-Regular.ttf");
+}
 #text-cloud {
-  padding-top: 25%;
+  padding-top: 33%;
+}
+.test{
+  font-family: "ksh";
 }
 </style>

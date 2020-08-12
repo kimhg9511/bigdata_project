@@ -45,10 +45,10 @@ export default new Vuex.Store({
       state.dataCloud = dataCloud;
     },
     SET_CSV_LINE_PROFIT(state, dataLineProfit) {
-      state.dataLineProfit = dataLineProfit.slice(1,-1);
+      state.dataLineProfit = dataLineProfit;
     },
     SET_CSV_BAR_PROFIT(state, dataBarProfit) {
-      state.dataBarProfit = dataBarProfit.slice(1,-1);
+      state.dataBarProfit = dataBarProfit;
     }
   },
   actions: {
@@ -60,19 +60,22 @@ export default new Vuex.Store({
         .catch(error => console.log(error));
     },
     LOAD_CSV_LINE_PROFIT({ commit }, fileName) {
-      // console.log("line action called...");
       return loadFile(fileName)
         .then(({data}) => {
-          const dataLineProfit = data.split("\n").map(el => el.split(","));
+          const dataLineProfit = data.split("\n").map(el => el.split(",")).slice(1,-1);
           commit('SET_CSV_LINE_PROFIT', dataLineProfit)
         })
         .catch(error => console.log(error));
     },
     LOAD_CSV_BAR_PROFIT({ commit }, fileName) {
-      // console.log("line action called...");
       return loadFile(fileName)
         .then(({data}) => {
-          const dataBarProfit = data.split("\n").map(el => el.split(","));
+          let dataBarProfit = data.split("\n").map(el => el.split(","));
+          dataBarProfit = dataBarProfit.map(el => {
+            el[1] = el[1] == "#VALUE!" ? 0 : el[1];
+            el[2] = escape(el[2]).replace("%0D","");
+            return el
+          })
           commit('SET_CSV_BAR_PROFIT', dataBarProfit)
         })
         .catch(error => console.log(error));

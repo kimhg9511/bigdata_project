@@ -7,20 +7,24 @@
 import * as d3 from "d3";
 
 export default {
+  props: [
+    "month"
+  ],
   data() {
     return {
       data: this.$store.state.dataBarProfit,
-      month: 0,
       oneDayData: [],
+      oldData: [],
       width: 1000,
       height: 600,
       margin: {
         top: 20,
         right: 20,
         bottom: 50,
-        left: 70
+        left: 120
       },
-      domainX: [-30,30],
+      domainX: [-30, 30],
+      sorted: false,
     }
   },
   computed: {    
@@ -32,6 +36,17 @@ export default {
     },
     dataDates() {
       return [...new Set(this.data.map(el => el[2]))];
+    },
+    dataProfit() {
+      return this.oneDayData.map(el => el[1] == "#VALUE!"
+        ? 0
+        : el[1]);
+    },
+    profitMax() {
+      return Math.max(...this.dataProfit)
+    },
+    profitMin() {
+      return Math.min(...this.dataProfit)
     },
     xScale() {
       return d3.scaleLinear()
@@ -55,26 +70,22 @@ export default {
     },
     redColorScale() {
       return d3.scaleLinear()
-        .domain([0, 30])
+        .domain([0, this.profitMax])
         .range(["rgba(229,57,53,0.5)","#e53935"])
         .clamp(true)
     },
     blueColorScale() {
       return d3.scaleLinear()
-        .domain([0, -30])
+        .domain([0, this.profitMin])
         .range(["rgba(30,136,229,0.5)","#1e88e5"])
         .clamp(true)
-    }
+    },
   },
   mounted () {
     this.drawBarChart()
   },
   methods: {
     drawBarChart() {
-      // 데이터 전처리
-      // console.log(oneDayData)
-      // console.log(Math.max(...this.oneDayData.map(el=>el[1])));
-      this.oneDayData = this.data.filter(el => el[2] == this.dataDates[this.month]);
       // svg 그리기
       const svgBar = d3.select("#bar-chart-profit")
         .classed("svg-container", true)
@@ -85,26 +96,54 @@ export default {
       const barChart = svgBar.append("g")
         .classed("bar-chart", true)
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`); 
-      const xAxisGroup = barChart.append("g")
+      barChart.append("g")
         .classed("x-axis", true)
-        .attr("transform", `translate(${this.graphWidth / 2},${this.graphHeight})`);
-      const yAxisGroup = barChart.append("g")
+        .attr("transform", `translate(${this.graphWidth / 2},${this.graphHeight})`)
+        .style("font-size", "20px");
+      barChart.append("g")
         .classed("y-axis", true)  
-      barChart.selectAll("rect").data(this.oneDayData).enter().append("rect").call(this.draw, this.oneDayData)  
+        .style("font-weight", "bold")
+        .style("font-size", "12px");
+      this.oneDayData = this.data.filter(el => el[2] == "Jan-19");
+      barChart.selectAll("rect")
+        .data(this.oneDayData)
+        .enter()
+        .append("rect")
+        .call(this.draw, this.oneDayData)  
     },
-    draw(selection, data) {
-      const xAxisGroup = d3.select(".x-axis");
-      const yAxisGroup = d3.select(".y-axis")
+    draw(selection) {
+      const xAxisGroup = d3.select("#bar-chart-profit .x-axis")
+        .transition().duration(1200)
+      const yAxisGroup = d3.select("#bar-chart-profit .y-axis")
         .transition().duration(1200);
-      xAxisGroup.call(this.xAxis);
+      yAxisGroup.select(".domain")
+        .attr("opacity", 0)
+      xAxisGroup.call(this.xAxis.tickSize(-this.graphHeight));
       yAxisGroup.call(this.yAxis);
       // init
       selection
         .attr("y", d => this.yScale(d[0]))
         .attr("height", this.yScale.bandwidth())
         .on("click", () => {
-          this.month += 1;
-          this.oneDayData = this.data.filter(el => el[2] == this.dataDates[this.month]);
+          if(this.sorted) {
+            this.oneDayData = this.data.filter(el => el[2] == this.month);
+          } else {
+            let sortedData = [...this.oneDayData];
+            this.oneDayData = sortedData.sort((a,b)=> b[1] - a[1]);
+          }
+          this.sorted = !this.sorted;
+        })
+        .attr("x", (d,i) => {
+          return this.oldData.length == 0
+            ? this.graphWidth / 2
+            : this.oldData[i][1] >= 0 
+            ? this.graphWidth / 2 
+            : this.graphWidth / 2 + this.xScale(this.oldData[i][1])
+        })
+        .attr("width", (d,i) => {
+          return this.oldData.length == 0
+            ? 0
+            : Math.abs(this.xScale(this.oldData[i][1]))
         })
         .transition().duration(1200).delay((d, i) => i*20)
         .attr("fill", d => {
@@ -112,45 +151,64 @@ export default {
             return "black"
           }
           else {
-            console.log(d[1]);
             return d[1] >= 0
               ? this.redColorScale(d[1])
               : this.blueColorScale(d[1])
           }
         })
         .attr("x", d => {
-          // 거래정지 종목 처리
-          if (d[1] == "#VALUE!") {
-            return this.graphWidth / 4
-          }
-          else {
             return d[1] >= 0 
               ? this.graphWidth / 2 
               : this.graphWidth / 2 + this.xScale(d[1])
-          }
         })
-        .attr("width", d => {
-          // 거래정지 종목 처리
-          if(d[1] == "#VALUE!") {
-            return Math.abs(this.xScale(this.graphWidth))
-            return 0
-          }
-          else {
-            return Math.abs(this.xScale(d[1]));
-          }
-        })
-    },
+        .attr("width", d => Math.abs(this.xScale(d[1])))
+    }
   },
   watch: {
-    'oneDayData' (newData) {
-      d3.select(".bar-chart").selectAll("rect").data(newData).call(this.draw, newData, this.xAxis, this.yAxis)
+    'oneDayData' (newData, oldData) {
+      this.oldData = oldData;
+      if(oldData != "") {
+        d3.select(".bar-chart").selectAll("rect").data(newData).call(this.draw, newData, this.xAxis, this.yAxis)
+      } 
+      // else{
+      //   d3.select(".bar-chart").selectAll("rect")
+      //     .data(this.oneDayData)
+      //     .enter()
+      //     .append("rect")
+      //     .call(this.draw, this.oneDayData);
+      // }
+    },
+    'month' (newMonth, oldMonth){
+      if(oldMonth != "") {
+        let data = this.data.filter(el => el[2] == newMonth);
+        if(this.sorted) data.sort((a,b)=> b[1] - a[1]);
+        this.oneDayData = data;
+      }
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
 #bar-chart-profit {
-  padding-top: 100%;
+  padding-top: 30%;
+  display: flex;
+  align-items: center;
+}
+#bar-chart-profit .x-axis .domain {
+  color: black;
+}
+#bar-chart-profit .x-axis .ticks {
+  color: black;
+}
+#bar-chart-profit .x-axis .ticks:nth-of-child(13) {
+  opacity: 0;
+}
+#bar-chart-profit .x-axis .ticks:nth-of-child(7){
+  color: red;
+}
+.test{
+  position: absolute;
+  font-size: 10rem;
 }
 </style>

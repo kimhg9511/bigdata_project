@@ -35,7 +35,6 @@ export default {
 <style scoped>
 .cloud-view {
   display: flex;
-  justify-content: start;
 }
 #text-cloud {
   width: 70%;

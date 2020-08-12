@@ -17,6 +17,7 @@ export default {
         bottom: 60,
         left: 80
       },
+      currentDate: '',
     }
   },
   computed: {
@@ -26,6 +27,30 @@ export default {
     graphHeight() { 
       return this.height - this.margin.top - this.margin.bottom;
     },
+    date() {
+      return this.data.map(el => el[0]);
+    },
+    profit() {
+      return this.data.map(el => el[4]);
+    },
+    xScale() {
+      return d3.scaleBand()
+        .domain(this.date)
+        .range([0,this.graphWidth])
+    },
+    yScale() {
+      return d3.scaleLinear()
+        .domain([-10,10])
+        .range([this.graphHeight,0])
+    },
+    xAxis() {
+      return d3.axisBottom(this.xScale);
+    },
+    yAxis() {
+      return d3.axisLeft(this.yScale)
+        .ticks(10)
+        .tickFormat(d => d + " %");
+    } 
   },
   mounted() {
     this.drawLineChart()
@@ -34,43 +59,26 @@ export default {
     drawLineChart() {
       // 데이터 전처리
       const data = [];
-      const base = this.data.slice(1,-1);
-      const date = base.map(el => el[0]);
-      const profit = base.map(el => el[el.length-1]);
-      date.map((el,idx) => {
+      this.date.map((el,idx) => {
         data[idx] = {
           date: el,
-          profit: profit[idx]
+          profit: this.profit[idx]
         }
       })
+      this.currentDate = this.date[0];
       // 차트 설정
       const lineChart = this.setSVG("#line-chart-profit");
       // scale 설정
-      const xAxisGroup = lineChart.append("g")
+      lineChart.append("g").classed("x-axis", true)  
         .attr("transform", `translate(0,${this.graphHeight})`)
         // .transition().duration(400);
-      const yAxisGroup = lineChart.append("g")  
-      const xScale = d3.scaleBand()//;
-        .domain(date)
-        .range([0,this.graphWidth])
-      const yScale = d3.scaleLinear()//;
-        .domain([-10,10])
-        .range([this.graphHeight,0])
-      const xAxis = d3.axisBottom(xScale);
-      const yAxis = d3.axisLeft(yScale)
-        .ticks(10)
-        .tickFormat(d => d + " %");
-      xAxisGroup.call(xAxis);
-      // yAxisGroup.call(yAxis);
-      yAxisGroup
-        .classed("y-grid", true)
-        // .attr("class", "y-grid")
-        .call(yAxis.tickSize(-this.graphWidth))
+      lineChart.append("g").classed("y-axis", true)  
       // init
-      lineChart
-        .call(this.drawLine, data, {xScale, yScale})
-      lineChart
-        .call(this.drawCircle, data, {xScale, yScale})  
+      lineChart.append("path").datum(data)
+        .call(this.drawLine);
+      const circles = lineChart.selectAll("circle").data(data)
+      circles.enter().append("circle")
+        .call(this.drawCircle)
     },
     setSVG(selector) {
       const svg = d3.select(selector)
@@ -83,52 +91,87 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
       return chart;
     },
-    setScale() {
-    },
-    drawLine(selection, data, scale) {
-      console.log("draw called...");
-      selection//.enter()
-        .append("path")
-        .datum(data)
+    drawLine(selection) {
+      const xAxisGroup = d3.select("#line-chart-profit .x-axis");
+      const yAxisGroup = d3.select("#line-chart-profit .y-axis");
+      xAxisGroup.call(this.xAxis);
+      yAxisGroup
+        .call(this.yAxis.tickSize(-this.graphWidth))
+      const xScale = this.xScale;
+      const ySclae = this.yScale;
+      const line = d3.line()
+        .x(function(d) {return xScale(d.date)})
+        .y(d => this.yScale(d.profit))
+      selection
         .attr("fill", "none")
         .attr("stroke", "steelblue")
-        .attr("transform", `translate(${scale.xScale.bandwidth()/2},0)`)
+        .attr("transform", `translate(${this.xScale.bandwidth()/2},0)`)
         .attr("stroke-width", 1.5)
-        .attr("d", d3.line()
-          .x(function(d) {return scale.xScale(d.date)})
-          .y(d => scale.yScale(d.profit))
-        );
+        .attr('d', line)
+      const pathLength = selection.node().getTotalLength();
+      selection
+        .attr('stroke-dasharray', `${pathLength} ${pathLength}`)
+        .attr('stroke-dashoffset', pathLength)
+        .transition().duration(1200).ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
     },
-    drawCircle(selection, data, scale) {
-      const circle = selection.selectAll("circle").data(data)
-      circle.enter().append("circle")
-        .attr("cx", d => scale.xScale(d.date))
-        .attr("cy", d => scale.yScale(d.profit))
-        .attr("r", 3)
-        .attr("transform", `translate(${scale.xScale.bandwidth()/2},0)`)
-        .attr("fill", "orange")
+    drawCircle(selection, data) {
+      const self = this;
+      selection
+        .attr("cx", d => this.xScale(d.date))
+        .attr("cy", d => this.yScale(d.profit))
+        .attr("transform", `translate(${this.xScale.bandwidth()/2},0)`)
+        .attr("fill", "rgba(0,0,0,0)")
+        .attr("stroke", "orange")
+        .attr("stroke-width", 1)
+        .on("click", function(d) {
+          self.currentDate = d.date;
+          d3.select("circle.selected")
+            .classed("selected", false)
+            .attr("fill", "rgba(0,0,0,0)")
+            .transition().duration(200).ease(d3.easeLinear)
+            .attr("r", 10);
+          d3.select(this)
+            .classed("selected", true)
+            .transition().duration(200).ease(d3.easeLinear)
+            .attr("fill", "rgba(255,165,0,0.25)")
+            .attr("r", 25)
+            .transition().duration(200).ease(d3.easeLinear)
+            .attr("fill", "rgba(255,165,0,0.5)")
+            .attr("r", 15);
+        })  
+        .transition().duration(400).ease(d3.easeLinear)
+        .attr("r", 15)
+        .transition().duration(400).ease(d3.easeLinear)
+        .attr("r", 10)
+    },
+  },
+  watch: {
+    'currentDate' (newvar, oldvar) {
+      this.$emit('change', newvar)
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 #line-chart-profit {
   width: 100%;
   padding-top: 40%;
 }
-.y-grid .domain {
+.y-axis >>> .domain {
   opacity: 0;
 }
-.y-grid>.tick:nth-of-type(6)>line{
+.y-axis>.tick:nth-of-type(6){
+  font-style: italic;
   color: red;
-  opacity: 0.3;
+  /* opacity: ; */
 }
-.y-grid>.tick:not(:nth-of-type(6))>line{
+.y-axis>.tick:not(:nth-of-type(6))>line{
   color: grey;
   opacity: 0.5;
 }
-.y-grid>.tick:first-of-type>line {
+.y-axis>.tick:first-of-type>line {
   opacity: 0;
 }
 </style>
