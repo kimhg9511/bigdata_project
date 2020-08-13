@@ -16,7 +16,7 @@ export default {
     AppFooter
   },
   created() {
-    this.$store.dispatch("LOAD_JSON_CLOUD", "rtop20_stocks20200707.json")
+    this.$store.dispatch("LOAD_JSON_CLOUD", "word.json")
     this.$store.dispatch("LOAD_CSV_LINE_PROFIT", "profit4.csv")
     this.$store.dispatch("LOAD_CSV_BAR_PROFIT", "each.csv")
   }
@@ -42,10 +42,14 @@ export default {
   display: block;
 }
 .svg-content {
-  background-color: #fff; 
+  background-color: #333; 
   position: absolute;
   top: 0;
   left: 0;
 }
-
+.svg-content .domain,
+.svg-content .tick {
+  /* color: #dfdfdf; */
+  color: #e5e5e5;
+}
 </style>

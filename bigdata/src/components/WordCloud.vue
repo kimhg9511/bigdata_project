@@ -9,36 +9,50 @@ export default {
   name: "word-cloud",
   data() {
     return { 
-      data : this.$store.state.dataCloud,
+      rawData : this.$store.state.dataCloud,
       texts: '',
-      width: 500,
-      height: 300,
+      width: 1000,
+      height: 500,
       margin: {
-        top: 20,
+        top: 0,
         right: 20,
-        bottom: 20,
+        bottom: 50,
         left: 20
       },
+      colorScale_1: d3.schemePastel1,
     }
   },
   computed: {
+    realData() {      
+      return this.rawData.sort((a,b) => b["count"] - a["count"]).slice(0,500)
+    },
     graphWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
     graphHeight() { 
       return this.height - this.margin.top - this.margin.bottom;
     },
-    keywords() {
-      return Object.keys(this.data);
-    },
-    wordCounts() {
-      return this.keywords.map(elem => this.data[elem]['count']);
-    },
     cMax() {
-      return this.wordCounts.reduce((a,b) => a > b ? a : b);
+      return this.realData.reduce((a,b) => a["count"] > b["count"] ? a : b)["count"];
     },
     cMin() {
-      return this.wordCounts.reduce((a,b) => a > b ? b : a);
+      return this.realData.reduce((a,b) => a["count"] > b["count"] ? b : a)["count"];
+    },
+    font() {
+      return d3.scalePow()
+        .exponent(0.5)
+        .domain([this.cMin, this.cMax])
+        .range([8, 40]);
+    },
+    color() {
+      return d3.scaleLinear()
+        .domain([this.cMin,this.cMax])
+        .range(["rgba(24,117,209,0.4)", "rgb(24,117,209)"]);
+    },
+    rotate() {
+      return d3.scaleLinear()
+        .domain([0,1])
+        .range([-15,15]);
     }
   },
   mounted() {
@@ -46,9 +60,7 @@ export default {
   },
   methods: {
     generateCloud(){
-      const setLayout = this.setLayout;
-      // 글자 크기 스케일
-      const scale = this.setScales(this.cMin, this.cMax);
+      this.realData
       let svg = d3.select("#text-cloud")
         .classed("svg-container", true)
         .append("svg")
@@ -58,73 +70,75 @@ export default {
         .attr("y", this.height)
         .classed("svg-content", true)
         .append("g")
-        .attr("transform",`translate(${this.graphWidth/2},${this.graphHeight/2})`);
-      // const data = Object.keys(keywords).map(function(d) { 
-      //   return {text: d}; 
-      // });
-      let data = [{'name':'','count':''}];
-      for (let i=0;i<this.keywords.length;i++){
-        data[i] = {
-          "name": this.keywords[i],
-          "count": this.wordCounts[i]
-        }
-      }
-      svg.call(setLayout, data, scale);  
-      setInterval(function(){
-        svg.call(setLayout, data, scale);
-      },4000) 
+        .attr("transform",`translate(${this.graphWidth/2},${this.graphHeight/2})`); 
+      const test = this.realData;
+      svg.call(this.setLayout, test);  
     },
-    setScales(cMin, cMax) {
-      const font = d3.scalePow()
-        .exponent(5)
-        .domain([cMin, cMax])
-        .range([20, 60]);
-      const color = d3.scaleLinear()
-        .domain([cMin,cMax])
-        .range(["rgba(24,117,209,0.4)", "rgb(24,117,209)"]);
-      return {font, color}
-    },
-    setLayout(selection, data, scale) {
+    setLayout(selection, data) {
       const cloud = d3cloud()
         .size([this.graphWidth, this.graphHeight])
         .words(data)
-        .padding(2)
-        .rotate(0)
+        .padding(0.2)
+        .rotate(() => {
+          const temp = Math.random();
+          return this.rotate(temp);
+        })
         .text(d => d.name)
         .font('monospace')      
-        .fontSize(d => scale.font(d.count))
+        .fontSize(d => this.font(d.count))
         .on("end", data => {
-          this.draw(data, scale, selection)
+          this.draw(data, selection)
         })
         .start();
     },
-    draw(words, scale, selection) {
+    // updateLayout(selection, data) {
+    //   const cloud = d3cloud()
+    //     .size([this.graphWidth, this.graphHeight])
+    //     .words(data)
+    //     .padding(0.2)
+    //     .rotate(() => {
+    //       const temp = Math.random();
+    //       console.log(temp);
+    //       return this.rotate(temp);
+    //     })
+    //     .text(d => d.name)
+    //     .font('monospace')      
+    //     .fontSize(d => this.font(d.count))
+    //     .on("end", data => {
+    //       this.update(data, selection)
+    //     })
+    //     .start();
+    // },
+    draw(words, selection) {
       const cloud = selection.selectAll("text").data(words);
       cloud.enter().append("text")
         .text(d => d.text)
         .attr("text-anchor", "middle")
         .attr("class", "cloud-item")
-        .style("fill", d => scale.color(d.size))
+        .attr("fill", d => this.colorScale_1[parseInt(Math.random() * this.colorScale_1.length)]
+        )
         .style("font-size", d => d.size)
         .style("font-family", d => d.font)
-        .on("click", (d) => {
-          d3.select("#content-box").dispatch("update", {detail: {data: d}})
-        })
+        // .on("click", (d) => {
+        //   d3.select("#content-box").dispatch("update", {detail: {data: d}})
+        // })
         .transition()
-        .duration(800)
-        .delay((d, i) => i * 20)
+        .duration(400)
+        .delay((d, i) => i * 2)
         .attr("transform", d => 
           `translate(${[d.x, d.y]})rotate(${d.rotate})`
         )
-      cloud.exit().remove()
-      cloud
-        .transition()
-        .duration(800)
-        .delay((d, i) => i * 20)
-        .attr("transform", d => 
-          `translate(${[d.x, d.y]})rotate(${d.rotate})`
-        )
-    }
+    },
+    // update(words, selection) {
+    //   const cloud = selection.selectAll("text").data(words);
+    //   cloud
+    //     .transition()
+    //     .duration(400)
+    //     // .delay((d, i) => i * 2)
+    //     .attr("transform", d => 
+    //       `translate(${[d.x, d.y]})rotate(${d.rotate})`
+    //     )
+    // }
   }
 }
 </script>
@@ -135,7 +149,10 @@ export default {
   src: url("../fonts/KaushanScript-Regular.ttf");
 }
 #text-cloud {
-  padding-top: 33%;
+  padding-top: 40%;
+}
+#text-cloud > svg{
+  background-color: #333;
 }
 .test{
   font-family: "ksh";

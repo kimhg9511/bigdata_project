@@ -14,7 +14,7 @@ export default {
 footer {
   flex-shrink: 0;
   height: 50px;
-  background-color: #ddd;
+  background-color: #333;
   text-align: right;
   line-height: 50px;
   font-weight: bold;

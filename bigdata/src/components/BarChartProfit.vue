@@ -12,15 +12,16 @@ export default {
   ],
   data() {
     return {
+      chartName: '#bar-chart-profit',
       data: this.$store.state.dataBarProfit,
       oneDayData: [],
       oldData: [],
-      width: 1000,
-      height: 600,
+      width: 800,
+      height: 500,
       margin: {
-        top: 20,
-        right: 20,
-        bottom: 50,
+        top: 80,
+        right: 50,
+        bottom: 30,
         left: 120
       },
       domainX: [-30, 30],
@@ -87,7 +88,7 @@ export default {
   methods: {
     drawBarChart() {
       // svg 그리기
-      const svgBar = d3.select("#bar-chart-profit")
+      const svgBar = d3.select(this.chartName)
         .classed("svg-container", true)
         .append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
@@ -112,18 +113,16 @@ export default {
         .call(this.draw, this.oneDayData)  
     },
     draw(selection) {
-      const xAxisGroup = d3.select("#bar-chart-profit .x-axis")
+      const xAxisGroup = d3.select(`${this.chartName} .x-axis`)
         .transition().duration(1200)
-      const yAxisGroup = d3.select("#bar-chart-profit .y-axis")
+      const yAxisGroup = d3.select(`${this.chartName} .y-axis`)
         .transition().duration(1200);
-      yAxisGroup.select(".domain")
-        .attr("opacity", 0)
       xAxisGroup.call(this.xAxis.tickSize(-this.graphHeight));
       yAxisGroup.call(this.yAxis);
-      // init
       selection
         .attr("y", d => this.yScale(d[0]))
         .attr("height", this.yScale.bandwidth())
+        // sort - 수익률순, 시총순
         .on("click", () => {
           if(this.sorted) {
             this.oneDayData = this.data.filter(el => el[2] == this.month);
@@ -133,34 +132,21 @@ export default {
           }
           this.sorted = !this.sorted;
         })
-        .attr("x", (d,i) => {
-          return this.oldData.length == 0
+        .attr("x", (d,i) => this.oldData.length == 0
             ? this.graphWidth / 2
             : this.oldData[i][1] >= 0 
             ? this.graphWidth / 2 
-            : this.graphWidth / 2 + this.xScale(this.oldData[i][1])
-        })
-        .attr("width", (d,i) => {
-          return this.oldData.length == 0
-            ? 0
-            : Math.abs(this.xScale(this.oldData[i][1]))
-        })
+            : this.graphWidth / 2 + this.xScale(this.oldData[i][1]))
+        .attr("width", (d,i) => this.oldData.length == 0
+          ? 0
+          : Math.abs(this.xScale(this.oldData[i][1])))
         .transition().duration(1200).delay((d, i) => i*20)
-        .attr("fill", d => {
-          if (d[1] == "#VALUE!") {
-            return "black"
-          }
-          else {
-            return d[1] >= 0
-              ? this.redColorScale(d[1])
-              : this.blueColorScale(d[1])
-          }
-        })
-        .attr("x", d => {
-            return d[1] >= 0 
-              ? this.graphWidth / 2 
-              : this.graphWidth / 2 + this.xScale(d[1])
-        })
+        .attr("fill", d => d[1] >= 0
+          ? this.redColorScale(d[1])
+          : this.blueColorScale(d[1]))
+        .attr("x", d => d[1] >= 0 
+          ? this.graphWidth / 2 
+          : this.graphWidth / 2 + this.xScale(d[1]))
         .attr("width", d => Math.abs(this.xScale(d[1])))
     }
   },
@@ -170,13 +156,6 @@ export default {
       if(oldData != "") {
         d3.select(".bar-chart").selectAll("rect").data(newData).call(this.draw, newData, this.xAxis, this.yAxis)
       } 
-      // else{
-      //   d3.select(".bar-chart").selectAll("rect")
-      //     .data(this.oneDayData)
-      //     .enter()
-      //     .append("rect")
-      //     .call(this.draw, this.oneDayData);
-      // }
     },
     'month' (newMonth, oldMonth){
       if(oldMonth != "") {
@@ -196,19 +175,10 @@ export default {
   align-items: center;
 }
 #bar-chart-profit .x-axis .domain {
+  stroke-width: 1;
   color: black;
 }
-#bar-chart-profit .x-axis .ticks {
-  color: black;
-}
-#bar-chart-profit .x-axis .ticks:nth-of-child(13) {
+#bar-chart-profit .x-axis .tick:nth-of-type(1)>line{
   opacity: 0;
-}
-#bar-chart-profit .x-axis .ticks:nth-of-child(7){
-  color: red;
-}
-.test{
-  position: absolute;
-  font-size: 10rem;
 }
 </style>

@@ -34,11 +34,15 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ddd;
+  background-color: #333;
+  /* background: linear-gradient(to top, rgba(252,227,138,0.9), rgba(243,129,129,0.9)); */
   box-shadow: inset 0 -4px 6px 0 rgba(0,0,0,0.1);
 }
 .nav-items {
   text-align: center;
+  font-family: "NBR";
+  font-weight: bold;
+  color: #ffff58;
 }
 .nav-items:first-of-type/*, .nav-items:last-of-type*/{
   width: 150px;

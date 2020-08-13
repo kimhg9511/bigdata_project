@@ -23,7 +23,7 @@ export default {
       let OneDayData = preProcess(json, date).slice(11,31);
       const chart = {
         width: 800,
-        height: 300,
+        height: 500,
         margin: {
           top: 20,
           right: 100,
@@ -193,6 +193,6 @@ export default {
 
 <style scoped>
 #bar-chart-marcap {
-  padding-top: 40%;
+  padding-top: 30%;
 }
 </style>

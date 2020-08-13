@@ -124,7 +124,7 @@ export default {
   position: relative;
   overflow-x: hidden;
   overflow-y: overlay;
-  background-color: #ccc;
+  background-color: #555;
 }
 .carousel-slide {
   transition: background-color 0.4s;

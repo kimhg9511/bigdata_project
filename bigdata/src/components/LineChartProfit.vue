@@ -8,14 +8,15 @@ import * as d3 from "d3"
 export default {
   data() {
     return {
+      chartName: "#line-chart-profit",
       data: this.$store.state.dataLineProfit,
-      width: 1200,
+      width: 800,
       height: 500,
       margin: {
-        top: 20,
-        right: 80,
-        bottom: 60,
-        left: 80
+        top: 80,
+        right: 30,
+        bottom: 30,
+        left: 40
       },
       currentDate: '',
     }
@@ -65,9 +66,8 @@ export default {
           profit: this.profit[idx]
         }
       })
-      this.currentDate = this.date[0];
       // 차트 설정
-      const lineChart = this.setSVG("#line-chart-profit");
+      const lineChart = this.setSVG(this.chartName);
       // scale 설정
       lineChart.append("g").classed("x-axis", true)  
         .attr("transform", `translate(0,${this.graphHeight})`)
@@ -79,6 +79,9 @@ export default {
       const circles = lineChart.selectAll("circle").data(data)
       circles.enter().append("circle")
         .call(this.drawCircle)
+      setTimeout(() => {
+        d3.select(`${this.chartName} circle`).dispatch("click")
+      }, 1200);    
     },
     setSVG(selector) {
       const svg = d3.select(selector)
@@ -92,8 +95,8 @@ export default {
       return chart;
     },
     drawLine(selection) {
-      const xAxisGroup = d3.select("#line-chart-profit .x-axis");
-      const yAxisGroup = d3.select("#line-chart-profit .y-axis");
+      const xAxisGroup = d3.select(`${this.chartName} .x-axis`);
+      const yAxisGroup = d3.select(`${this.chartName} .y-axis`);
       xAxisGroup.call(this.xAxis);
       yAxisGroup
         .call(this.yAxis.tickSize(-this.graphWidth))

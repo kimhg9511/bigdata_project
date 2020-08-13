@@ -4,12 +4,12 @@
       <div class="row">
         <chart-slider class="chart-card col-12"></chart-slider>
         <div class="row">
-          <word-cloud class="chart-card col-6"></word-cloud>    
+          <bar-chart-marcap class="chart-card col-6"></bar-chart-marcap>
           <bar-chart-profit class="chart-card col-6" :month="'Jan-19'"></bar-chart-profit>
         </div>
       </div>
       <div class="row">
-        <bar-chart-marcap class="chart-card col-12"></bar-chart-marcap>
+          <word-cloud class="chart-card col-12"></word-cloud> 
       </div>
     </div>
     <div class="row notebook">
@@ -49,6 +49,7 @@ export default {
   width: 100%;
   display: flex;
   flex-flow: row wrap;
+  align-items: flex-start;
 }
 .chart-card {
   background-color: #fff;

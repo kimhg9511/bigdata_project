@@ -1,14 +1,17 @@
 <template>
   <div class="cloud-view">
     <word-cloud></word-cloud>
-    <div id="content-box">{{ data }}</div>
+    <!-- <div id="content-box">{{ data }}</div> -->
+    <!-- <force-detected-tree></force-detected-tree> -->
   </div>
 </template>
 <script>
 import * as d3 from "d3"
 import WordCloud from "../components/WordCloud"
+import ForceDetectedTree from "../components/ForceDetectedTree"
 export default {
   components: {
+    ForceDetectedTree,
     WordCloud,
   },
   data() {
@@ -33,7 +36,7 @@ export default {
 </script>
 
 <style scoped>
-.cloud-view {
+/* .cloud-view {
   display: flex;
 }
 #text-cloud {
@@ -41,5 +44,5 @@ export default {
 }
 #content-box {
   width: 30%;
-}
+} */
 </style>
