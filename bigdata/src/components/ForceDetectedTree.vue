@@ -14,21 +14,16 @@ export default {
   methods: {
     drawTreeChart() {
       
-      const width = 500;
+      const width = 800;
       const height = 500;
-      // console.log(json.default);
-      // console.log(d3.hierarchy(json.default));
       // data definition
       const root = d3.hierarchy(json.default);
       const links = root.links();
       const nodes = root.descendants();
-      // console.log(root);
-      // console.log(links);
-      // console.log(nodes);
-      // console.log(d3.forceX());
+
       const simulation = d3.forceSimulation(nodes)
-          .force("link", d3.forceLink(links).id(d => d.id).distance(25).strength(0.1))
-          .force("charge", d3.forceManyBody().strength(-20))
+          .force("link", d3.forceLink(links).id(d => d.id).distance(50).strength(1))
+          .force("charge", d3.forceManyBody().strength(-200))
           .force("x", d3.forceX())
           .force("y", d3.forceY());
       // console.log(simulation);
@@ -48,21 +43,23 @@ export default {
           .attr("fill", "#fff")
           .attr("stroke", "#000")
           .attr("stroke-width", 1.5)
-        .selectAll("circle")
+        .selectAll("g")
         .data(nodes)
-        .join("circle")
-          .attr("fill", d => d.children ? null : "#000")
-          .attr("stroke", d => d.children ? null : "#fff")
-          .attr("r", () => {
-            const temp = (Math.random()+0.5) * 10
-            return temp;
-          })
-          .attr("opacity", 0.7)
-          .call(drag(simulation));
-
-      node.append("title")
-          .text(d => d.data.name);
-
+        .join("g")
+      node.append("circle")
+        .attr("fill", d => d.children ? null : "#000")
+        .attr("stroke", d => d.children ? null : "#fff")
+        .attr("r", () => {
+          const temp = (Math.random()+0.5) * 10
+          return temp;
+        })
+        .attr("opacity", 0.7)
+        .call(drag(simulation));
+      node.append("text")
+        // .style("color", d => d.children ? "#fff" : "#000")
+        .attr("text-anchor", "middle")
+        .text(d => d.data.name)
+        .call(drag(simulation));
       simulation.on("tick", () => {
         link
           .attr("x1", d => d.source.x)
@@ -70,9 +67,12 @@ export default {
           .attr("x2", d => d.target.x)
           .attr("y2", d => d.target.y);
 
-        node
+        node.selectAll("circle")
           .attr("cx", d => d.x)
           .attr("cy", d => d.y);
+        node.selectAll("text")
+          .attr("x", d => d.x)
+          .attr("y", d => d.y);
       });
       function drag(simulation){
   

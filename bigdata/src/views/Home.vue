@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    welcome!!
+    <img src="../assets/logo_555.png" alt="">
   </div>
 </template>
 
@@ -13,9 +13,13 @@ export default {
 <style>
 .home {
   display: flex;
+  text-align: center;
   align-items: center;
   justify-content: center;
   font-size: 5rem;
   font-weight: bold;
+}
+.home > img {
+  display: block;
 }
 </style>

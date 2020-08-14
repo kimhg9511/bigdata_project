@@ -1,8 +1,11 @@
 <template>
   <div class="cloud-view">
     <word-cloud></word-cloud>
+    <!-- <div id="content-box">
+      <div>graph1</div>
+    </div> -->
     <!-- <div id="content-box">{{ data }}</div> -->
-    <!-- <force-detected-tree></force-detected-tree> -->
+    <force-detected-tree></force-detected-tree>
   </div>
 </template>
 <script>
@@ -36,13 +39,17 @@ export default {
 </script>
 
 <style scoped>
-/* .cloud-view {
+.cloud-view {
   display: flex;
 }
 #text-cloud {
-  width: 70%;
+  width: 50%;
 }
 #content-box {
-  width: 30%;
-} */
+  width: 50%;
+}
+#content-box div {
+  text-align: center;
+  height: 120px;
+}
 </style>

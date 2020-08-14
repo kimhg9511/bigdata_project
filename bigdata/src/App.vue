@@ -17,6 +17,7 @@ export default {
   },
   created() {
     this.$store.dispatch("LOAD_JSON_CLOUD", "word.json")
+    this.$store.dispatch("LOAD_JSON_BAR_MARCAP", "marcap08052.json")
     this.$store.dispatch("LOAD_CSV_LINE_PROFIT", "profit4.csv")
     this.$store.dispatch("LOAD_CSV_BAR_PROFIT", "each.csv")
   }
@@ -30,6 +31,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  font-family: "NanumSquareRound";
 }
 .svg-container {
   position: relative;
@@ -49,7 +51,9 @@ export default {
 }
 .svg-content .domain,
 .svg-content .tick {
-  /* color: #dfdfdf; */
+  font-size: 1.2rem;
+  font-family: "NanumBarunpen";
+  font-weight: 700;
   color: #e5e5e5;
 }
 </style>

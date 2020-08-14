@@ -10,33 +10,20 @@ export default {
   data() {
     return { 
       rawData : this.$store.state.dataCloud,
-      texts: '',
-      width: 1000,
+      width: 800,
       height: 500,
-      margin: {
-        top: 0,
-        right: 20,
-        bottom: 50,
-        left: 20
-      },
       colorScale_1: d3.schemePastel1,
     }
   },
   computed: {
     realData() {      
-      return this.rawData.sort((a,b) => b["count"] - a["count"]).slice(0,500)
-    },
-    graphWidth() {
-      return this.width - this.margin.left - this.margin.right;
-    },
-    graphHeight() { 
-      return this.height - this.margin.top - this.margin.bottom;
-    },
-    cMax() {
-      return this.realData.reduce((a,b) => a["count"] > b["count"] ? a : b)["count"];
+      return this.rawData.sort((a,b) => b["count"] - a["count"]).slice(0, 500)
     },
     cMin() {
       return this.realData.reduce((a,b) => a["count"] > b["count"] ? b : a)["count"];
+    },
+    cMax() {
+      return this.realData.reduce((a,b) => a["count"] > b["count"] ? a : b)["count"];
     },
     font() {
       return d3.scalePow()
@@ -52,7 +39,7 @@ export default {
     rotate() {
       return d3.scaleLinear()
         .domain([0,1])
-        .range([-15,15]);
+        .range([-30,30]);
     }
   },
   mounted() {
@@ -60,23 +47,19 @@ export default {
   },
   methods: {
     generateCloud(){
-      this.realData
       let svg = d3.select("#text-cloud")
         .classed("svg-container", true)
         .append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", `0 0 ${this.width} ${this.height}`)
-        .attr("x", this.width)
-        .attr("y", this.height)
         .classed("svg-content", true)
         .append("g")
-        .attr("transform",`translate(${this.graphWidth/2},${this.graphHeight/2})`); 
-      const test = this.realData;
-      svg.call(this.setLayout, test);  
+        .attr("transform",`translate(${this.width/2},${this.height/2})`); 
+      svg.call(this.setLayout, this.realData);  
     },
     setLayout(selection, data) {
       const cloud = d3cloud()
-        .size([this.graphWidth, this.graphHeight])
+        .size([this.width, this.height])
         .words(data)
         .padding(0.2)
         .rotate(() => {
@@ -84,31 +67,13 @@ export default {
           return this.rotate(temp);
         })
         .text(d => d.name)
-        .font('monospace')      
+        .font('NanumSquareRound')      
         .fontSize(d => this.font(d.count))
         .on("end", data => {
           this.draw(data, selection)
         })
         .start();
     },
-    // updateLayout(selection, data) {
-    //   const cloud = d3cloud()
-    //     .size([this.graphWidth, this.graphHeight])
-    //     .words(data)
-    //     .padding(0.2)
-    //     .rotate(() => {
-    //       const temp = Math.random();
-    //       console.log(temp);
-    //       return this.rotate(temp);
-    //     })
-    //     .text(d => d.name)
-    //     .font('monospace')      
-    //     .fontSize(d => this.font(d.count))
-    //     .on("end", data => {
-    //       this.update(data, selection)
-    //     })
-    //     .start();
-    // },
     draw(words, selection) {
       const cloud = selection.selectAll("text").data(words);
       cloud.enter().append("text")
@@ -119,6 +84,7 @@ export default {
         )
         .style("font-size", d => d.size)
         .style("font-family", d => d.font)
+        .style("font-weight", "900")
         // .on("click", (d) => {
         //   d3.select("#content-box").dispatch("update", {detail: {data: d}})
         // })
@@ -128,28 +94,14 @@ export default {
         .attr("transform", d => 
           `translate(${[d.x, d.y]})rotate(${d.rotate})`
         )
-    },
-    // update(words, selection) {
-    //   const cloud = selection.selectAll("text").data(words);
-    //   cloud
-    //     .transition()
-    //     .duration(400)
-    //     // .delay((d, i) => i * 2)
-    //     .attr("transform", d => 
-    //       `translate(${[d.x, d.y]})rotate(${d.rotate})`
-    //     )
-    // }
+    }
   }
 }
 </script>
 
 <style>
-@font-face {
-  font-family: "ksh";
-  src: url("../fonts/KaushanScript-Regular.ttf");
-}
 #text-cloud {
-  padding-top: 40%;
+  padding-top: 60%;
 }
 #text-cloud > svg{
   background-color: #333;

@@ -6,11 +6,15 @@
 
 <script>
 import * as d3 from "d3";
-import json from "../../public/data/marcap08052.json"
 export default {
+  data() {
+    return {
+      data: this.$store.state.dataBarMarcap,
+    }
+  },
   computed: {
     dates() {
-      return Array.from(new Set(json.map(el => el.Date)))
+      return Array.from(new Set(this.data.map(el => el.Date)))
     }
   },
   mounted() {
@@ -20,9 +24,9 @@ export default {
     drawBarChart() {
       let count = 0;
       let date = this.dates[count];
-      let OneDayData = preProcess(json, date).slice(11,31);
+      let OneDayData = preProcess(this.data, date).slice(11,31);
       const chart = {
-        width: 800,
+        width: 2000,
         height: 500,
         margin: {
           top: 20,
@@ -73,21 +77,11 @@ export default {
       barChart.selectAll("rect").data(OneDayData).call(draw, OneDayData)
       barChart.on("update", () => {
         let date = d3.event.detail.date;
-        OneDayData = preProcess(json, date).slice(11,31);
+        OneDayData = preProcess(this.data, date).slice(11,31);
         if (this.dates.includes(date)) {
           barChart.selectAll("rect").data(OneDayData).call(update, OneDayData)
         }
       })
-    /** update test code
-      // setTimeout(() => {
-      //   setInterval(() => {
-      //   count = count + 1;
-      //   date = this.dates[count];
-      //   OneDayData = preProcess(json, date).slice(11,31);
-      //   barChart.selectAll("rect").call(update, OneDayData)
-      //   }, 500);    
-      // }, 2000);
-    */
       function draw(selection, OneDayData) {
         // x축 그리기
         xScaleBar 
@@ -117,21 +111,6 @@ export default {
           .duration(2000)
           .delay((d,i) => i * 40)
           .attr("width", d=> xScaleBar(d[xValue]))  
-        // 이벤트 등록
-        // rects
-          // .on("mouseover", function(){
-          //   d3.select(this)
-          //     .transition()
-          //     .duration(800)
-          //     .attr("fill", "red")
-          //     .attr("width", d=> xScaleBar(d[xValue]))
-          // })
-          // .on("mouseout", function(d){
-          //   d3.select(this)
-          //     .transition()
-          //     .duration(800)
-          //     .attr("fill", (d,i) => colorScale(i))
-          // })
           selection.data(OneDayData)
             .transition()
             .duration(400)

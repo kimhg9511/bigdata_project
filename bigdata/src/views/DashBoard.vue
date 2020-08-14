@@ -4,8 +4,8 @@
       <div class="row">
         <chart-slider class="chart-card col-12"></chart-slider>
         <div class="row">
-          <bar-chart-marcap class="chart-card col-6"></bar-chart-marcap>
-          <bar-chart-profit class="chart-card col-6" :month="'Jan-19'"></bar-chart-profit>
+          <line-chart-profit class="chart-card col-6"></line-chart-profit>
+          <bar-chart-profit class="chart-card col-6"></bar-chart-profit>
         </div>
       </div>
       <div class="row">
@@ -17,44 +17,31 @@
       <div class="chart-card col-4">member2 notebook</div>   
       <div class="chart-card col-4">member3 notebook</div>
     </div>
-    <div class="row information">
-      <div class="chart-card col-3">현재시각<br>00-00-00 00:00:00</div>
-      <div class="chart-card col-3">차트시각<br>00-00-00 00:00:00</div>
-      <div class="chart-card col-3">empty</div>
-      <div class="chart-card col-3">empty</div>
-    </div>
   </div>
 </template>
 
 <script>
-import ChartSlider from "../components/ChartSlider"
+import ChartSlider from "../components/ChartSlider";
 import BarChartProfit from "../components/BarChartProfit";
 import WordCloud from "../components/WordCloud";
-import BarChartMarcap from "../components/BarChartMarcap"
+import LineChartProfit from "../components/LineChartProfit";
 export default {
   components: {
     ChartSlider,
     BarChartProfit,
-    BarChartMarcap,
+    LineChartProfit,
     WordCloud
-  }
+  },
 }
 </script>
 
 <style scoped>
-#dashboard-wrap{
-  background-color: #e5e5e5;
-}
-.row {
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: flex-start;
-}
 .chart-card {
-  background-color: #fff;
+  color: #e5e5e5;
+  background-color: #333; 
   margin: 0.5%;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  /* border: 1px solid #fff; */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2) ,0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .notebook {
   height: 30%;
@@ -66,15 +53,18 @@ export default {
   text-align: center;
   font-size: 2rem;
 }
-.information {
-  height: 23%;
-}
 .information>div{
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
   font-size: 1.5rem;
+}
+.row {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
 }
 .col-12 {
   width: 99%;
@@ -89,8 +79,8 @@ export default {
   width: 24%;
 }
 @media screen and (min-width: 1025px) {
-.group {
-  display: flex;
-}
+  .group {
+    display: flex;
+  }
 }
 </style>

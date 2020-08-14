@@ -7,9 +7,6 @@
 import * as d3 from "d3";
 
 export default {
-  props: [
-    "month"
-  ],
   data() {
     return {
       chartName: '#bar-chart-profit',
@@ -21,7 +18,7 @@ export default {
       margin: {
         top: 80,
         right: 50,
-        bottom: 30,
+        bottom: 50,
         left: 120
       },
       domainX: [-30, 30],
@@ -29,6 +26,9 @@ export default {
     }
   },
   computed: {    
+    month() {
+      return this.$store.state.month;
+    },
     graphWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
@@ -97,14 +97,21 @@ export default {
       const barChart = svgBar.append("g")
         .classed("bar-chart", true)
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`); 
+      barChart.append("line")
+        .attr("x1", 0)
+        .attr("x2", this.graphWidth)
+        .attr("y1", this.graphHeight + 0.5)
+        .attr("y2", this.graphHeight + 0.5)
+        .style("stroke-width", 1)
+        .style("stroke", "#e5e5e5")
       barChart.append("g")
         .classed("x-axis", true)
         .attr("transform", `translate(${this.graphWidth / 2},${this.graphHeight})`)
-        .style("font-size", "20px");
-      barChart.append("g")
+      const yAxisGroup = barChart.append("g")
         .classed("y-axis", true)  
-        .style("font-weight", "bold")
-        .style("font-size", "12px");
+
+        // .attr("y2",)
+
       this.oneDayData = this.data.filter(el => el[2] == "Jan-19");
       barChart.selectAll("rect")
         .data(this.oneDayData)
@@ -114,11 +121,30 @@ export default {
     },
     draw(selection) {
       const xAxisGroup = d3.select(`${this.chartName} .x-axis`)
-        .transition().duration(1200)
-      const yAxisGroup = d3.select(`${this.chartName} .y-axis`)
         .transition().duration(1200);
+      const yAxisGroup = d3.select(`${this.chartName} .y-axis`);
       xAxisGroup.call(this.xAxis.tickSize(-this.graphHeight));
-      yAxisGroup.call(this.yAxis);
+      yAxisGroup.transition().duration(1200).call(this.yAxis)
+        .selectAll("text")
+        .attr("transform", "rotate(-15)")
+        .attr("font-size", "0.8rem")
+      yAxisGroup.selectAll("text")
+        .on("mouseover", function() {
+          console.log(this.month);
+
+          d3.select(this)
+            .transition().duration(400)
+            .attr("font-size", "1.4rem")
+            .attr("color", "#ffeb3b")
+            .attr("transform", "translate(20)rotate(0)")
+        })
+        .on("mouseout", function() {
+          d3.select(this)
+            .transition().duration(400)
+            .attr("font-size", "0.8rem")
+            .attr("color", "#e5e5e5")
+            .attr("transform", "translate(0)rotate(-15)")
+        })
       selection
         .attr("y", d => this.yScale(d[0]))
         .attr("height", this.yScale.bandwidth())
@@ -158,6 +184,7 @@ export default {
       } 
     },
     'month' (newMonth, oldMonth){
+      newMonth = newMonth.replace(newMonth.split("-")[1], "19")
       if(oldMonth != "") {
         let data = this.data.filter(el => el[2] == newMonth);
         if(this.sorted) data.sort((a,b)=> b[1] - a[1]);
@@ -175,10 +202,18 @@ export default {
   align-items: center;
 }
 #bar-chart-profit .x-axis .domain {
-  stroke-width: 1;
-  color: black;
-}
-#bar-chart-profit .x-axis .tick:nth-of-type(1)>line{
   opacity: 0;
+}
+#bar-chart-profit .x-axis .tick:first-of-type(1)>line{
+  opacity: 0;
+}
+#bar-chart-profit .x-axis .tick:nth-of-type(7){
+  font-style: italic;
+  color: #E53935;
+}
+#bar-chart-profit .x-axis .tick:not(:nth-of-type(7))>line{
+  color: #e5e5e5;
+  stroke-dasharray: 10 3;
+  opacity: 0.3;
 }
 </style>

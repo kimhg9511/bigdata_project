@@ -35,14 +35,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   background-color: #333;
-  /* background: linear-gradient(to top, rgba(252,227,138,0.9), rgba(243,129,129,0.9)); */
-  box-shadow: inset 0 -4px 6px 0 rgba(0,0,0,0.1);
+  box-shadow: inset 0 -3px 3px 0 rgba(255,255,255,0.15);
 }
 .nav-items {
   text-align: center;
-  font-family: "NBR";
-  font-weight: bold;
-  color: #ffff58;
+  font-family: "NanumBarunpen";
+  font-weight: 700;
+  color: #ffeb3b;
 }
 .nav-items:first-of-type/*, .nav-items:last-of-type*/{
   width: 150px;

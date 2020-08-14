@@ -15,10 +15,10 @@ export default {
       margin: {
         top: 80,
         right: 30,
-        bottom: 30,
+        bottom: 50,
         left: 40
       },
-      currentDate: '',
+      // currentDate: '',
     }
   },
   computed: {
@@ -27,6 +27,9 @@ export default {
     },
     graphHeight() { 
       return this.height - this.margin.top - this.margin.bottom;
+    },
+    month() {
+      return this.$store.state.month;
     },
     date() {
       return this.data.map(el => el[0]);
@@ -109,7 +112,7 @@ export default {
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("transform", `translate(${this.xScale.bandwidth()/2},0)`)
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 3)
         .attr('d', line)
       const pathLength = selection.node().getTotalLength();
       selection
@@ -125,23 +128,11 @@ export default {
         .attr("cy", d => this.yScale(d.profit))
         .attr("transform", `translate(${this.xScale.bandwidth()/2},0)`)
         .attr("fill", "rgba(0,0,0,0)")
-        .attr("stroke", "orange")
-        .attr("stroke-width", 1)
+        .attr("stroke", "#ffeb3b")
+        .attr("stroke-width", 2)
         .on("click", function(d) {
-          self.currentDate = d.date;
-          d3.select("circle.selected")
-            .classed("selected", false)
-            .attr("fill", "rgba(0,0,0,0)")
-            .transition().duration(200).ease(d3.easeLinear)
-            .attr("r", 10);
-          d3.select(this)
-            .classed("selected", true)
-            .transition().duration(200).ease(d3.easeLinear)
-            .attr("fill", "rgba(255,165,0,0.25)")
-            .attr("r", 25)
-            .transition().duration(200).ease(d3.easeLinear)
-            .attr("fill", "rgba(255,165,0,0.5)")
-            .attr("r", 15);
+          self.$store.commit("changeMonth", d.date)
+          // self.currentDate = d.date;
         })  
         .transition().duration(400).ease(d3.easeLinear)
         .attr("r", 15)
@@ -150,31 +141,43 @@ export default {
     },
   },
   watch: {
-    'currentDate' (newvar, oldvar) {
-      this.$emit('change', newvar)
+    'month' (month) {
+      month = month.replace(month.split("-")[1], "19")
+      d3.select("circle.selected")
+        .classed("selected", false)
+        .attr("fill", "rgba(0,0,0,0)")
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr("r", 10);
+      d3.select(`#line-chart-profit circle[cx='${this.xScale(month)}']`)
+        .classed("selected", true)
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr("fill", "rgba(255,235,59,0.25)")
+        .attr("r", 25)
+        .transition().duration(200).ease(d3.easeLinear)
+        .attr("fill", "rgba(255,235,59,0.5)")
+        .attr("r", 15);
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
 #line-chart-profit {
-  width: 100%;
-  padding-top: 40%;
+  padding-top: 30%;
 }
-.y-axis >>> .domain {
+#line-chart-profit .y-axis .domain {
   opacity: 0;
 }
-.y-axis>.tick:nth-of-type(6){
+#line-chart-profit .y-axis .tick:nth-of-type(6){
   font-style: italic;
-  color: red;
-  /* opacity: ; */
+  color: #E53935;
 }
-.y-axis>.tick:not(:nth-of-type(6))>line{
-  color: grey;
-  opacity: 0.5;
+#line-chart-profit .y-axis .tick:not(:nth-of-type(6))>line{
+  color: #e5e5e5;
+  stroke-dasharray: 10 3;
+  opacity: 0.3;
 }
-.y-axis>.tick:first-of-type>line {
+#line-chart-profit .y-axis .tick:first-of-type>line {
   opacity: 0;
 }
 </style>

@@ -8,7 +8,7 @@ export default new Vuex.Store({
     domains: [
       {
         url: "home",
-        name: "logo"
+        name: "GB"
       },
       {
         url: "intro",
@@ -33,7 +33,9 @@ export default new Vuex.Store({
     ],
     dataCloud: {},
     dataLineProfit: [],
-    dataBarProfit: []
+    dataBarProfit: [],
+    dataBarMarcap: [],
+    month: "",
   },
   getters: {
     urls(state) {
@@ -41,8 +43,14 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    changeMonth(state, month) {
+      state.month = month;
+    },
     SET_DATA_CLOUD(state, dataCloud) {
       state.dataCloud = dataCloud;
+    },
+    SET_JSON_BAR_MARCAP(state, dataBarMarcap) {
+      state.dataBarMarcap = dataBarMarcap;
     },
     SET_CSV_LINE_PROFIT(state, dataLineProfit) {
       state.dataLineProfit = dataLineProfit;
@@ -78,6 +86,11 @@ export default new Vuex.Store({
           })
           commit('SET_CSV_BAR_PROFIT', dataBarProfit)
         })
+        .catch(error => console.log(error));
+    },
+    LOAD_JSON_BAR_MARCAP({ commit }, fileName) {
+      return loadFile(fileName)
+        .then(({data}) => commit('SET_JSON_BAR_MARCAP', data))
         .catch(error => console.log(error));
     }
   },

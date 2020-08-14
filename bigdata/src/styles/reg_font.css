@@ -48,10 +48,32 @@
   src: url("../fonts/KaushanScript-Regular.ttf") format("truetype");
 }
 @font-face{
-  font-family: 'NBR';
+  font-family: 'NanumBarunpen';
   src: url("../fonts/NanumBarunpenR.ttf") format("truetype");
+  font-weight: 400;
 }
 @font-face{
-  font-family: 'NBB';
+  font-family: 'NanumBarunpen';
   src: url("../fonts/NanumBarunpenB.ttf") format("truetype");
+  font-weight: 700;
+}
+@font-face{
+  font-family: 'NanumSquareRound';
+  src: url("../fonts/NanumSquareRoundL.ttf") format("truetype");
+  font-weight: 300;
+}
+@font-face{
+  font-family: 'NanumSquareRound';
+  src: url("../fonts/NanumSquareRoundR.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face{
+  font-family: 'NanumSquareRound';
+  src: url("../fonts/NanumSquareRoundB.ttf") format("truetype");
+  font-weight: 700;
+}
+@font-face{
+  font-family: 'NanumSquareRound';
+  src: url("../fonts/NanumSquareRoundEB.ttf") format("truetype");
+  font-weight: 900;
 }

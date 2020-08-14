@@ -24,9 +24,11 @@ export default {
       startDate: new Date("2019-01-01 00:00:00"),
       endDate: new Date("2019-12-01 00:00:00"),
       formatD3ToMonth: d3.timeFormat("%b %Y"),
+      formatD3ToMonthDate: d3.timeFormat("%b-%d"),
       formatD3ToDate: d3.timeFormat("%d %b"),
+      formatD3ToTime: d3.timeFormat("%Y-%m-%d 00:00:00"),
+      parseMonthToD3: d3.timeParse("%b-%d-%Y"),
       parseDateToD3: d3.timeParse("%y-%m-%d"),
-      formatD3ToTime: d3.timeFormat("%Y-%m-%d 00:00:00")
     }
   },
   computed: {
@@ -35,6 +37,9 @@ export default {
     },
     graphHeight() { 
       return this.height - this.margin.top - this.margin.bottom;
+    },
+    month() {
+      return this.$store.state.month;
     },
     xScale() {
       return d3.scaleTime()
@@ -69,10 +74,11 @@ export default {
         .on("start drag", function() {
           self.currentValue = self.xScale(self.xScale.invert(d3.event.x - self.margin.left));
         })
-        // .on("end", function() {
-        //   // let date = formatD3ToTime(xScale.invert(currentValue));
-        //   // d3.selectAll("#bar-chart-marcap>svg>g").dispatch("update",{detail: {date}});
-        // })
+        .on("end", () => {
+          const month = this.formatD3ToMonthDate(this.xScale.invert(this.currentValue));
+          // console.log(month);
+          this.$store.commit("changeMonth", month);
+        })
       );
       playButton.call(this.addProgressEvent, this.step);
     },
@@ -115,21 +121,17 @@ export default {
         .attr("class", "domain")
         .attr("x", d => this.xScale(d))
         .attr("y", 40)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "12px")
         .text(d => this.formatD3ToMonth(d));
       selection.insert("circle", ".track-overlay")
         .attr("class", "handle")
         .attr("r", 9)
       selection.append("text")
         .attr("class", "label")
-        .attr("text-anchor", "middle")
         .text(this.formatD3ToDate(this.startDate))
         .attr("transform", `translate(0,${-25})`)
     },
     addProgressEvent(selection, step) {
       let timer;
-      const self = this;
       selection.on("click", function() {
         const button = d3.select(this).select("text");
         if(button.text() == "Pause") {
@@ -138,8 +140,8 @@ export default {
         }
         else {
           timer = setInterval(() => {
-            self.step(selection)
-          }, 400);
+            step(selection)
+          }, 1200);
           button.text("Pause");
         }
       })
@@ -148,10 +150,12 @@ export default {
     step(selection) {
       this.currentIdx += 1;
       this.currentValue = this.xScale(this.xScale.ticks(12)[this.currentIdx]);
-      if(this.currentIdx > 12) {
-        this.currentIdx = 0;
-        this.currentValue = 0;
-        selection.dispatch("click");
+      const month = this.formatD3ToMonthDate(this.xScale.invert(this.currentValue));
+      this.$store.commit("changeMonth", month);
+      if(this.currentIdx > 11) {
+        // selection.dispatch("click");
+        // this.currentIdx = 0;
+        // this.currentValue = 0;
       }
     }
   },
@@ -175,6 +179,13 @@ export default {
           .attr("x", newValue)
           .text(this.formatD3ToDate(this.xScale.invert(newValue)));
       }
+    },
+    'month' (month) {
+      if(month != undefined){
+        const objMonth = this.parseMonthToD3(`${month}-2019`);
+        const domainMonth = this.formatD3ToTime(objMonth);
+        this.currentValue = this.xScale(new Date(domainMonth));
+      }
     }
   }
 }
@@ -186,17 +197,14 @@ export default {
   padding-top: 15%;
 }
 /* progress bar 트랙 설정 */
-#slider-wrap .ticks {
-  font-size: 10px;
-}
 #slider-wrap .track,
 #slider-wrap .track-inset,
 #slider-wrap .track-overlay {
   stroke-linecap: round;
 }
 #slider-wrap .track {
-  stroke: #000;
-  stroke-opacity: 0.3;
+  stroke: #333;
+  stroke-opacity: 0.7;
   stroke-width: 10px;
 }
 #slider-wrap .track-inset {
@@ -211,14 +219,18 @@ export default {
 }
 #slider-wrap .domain {
   fill: #e5e5e5;
+  text-anchor: middle;
 }
 #slider-wrap .handle {
-  fill: #e5e5e5;
-  stroke: #e5e5e5;
-  stroke-opacity: 0.5;
+  fill: #ffeb3b;
+  stroke: #333;
+  stroke-opacity: 0.3;
   stroke-width: 1.25px;
 }
 #slider-wrap .label {
-  fill: #e5e5e5;
+  font-family: "NanumBarunpen";
+  fill: #ffeb3b;
+  text-anchor: middle;
+  font-size: 2rem;
 }
 </style>

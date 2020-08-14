@@ -1,10 +1,10 @@
 <template>
   <div id="carousel">
-    <!-- <router-link 
+    <router-link 
       v-if="currentIdx != 0"
       :to="prev ? prev : ''"
       class="carousel-slide left"
-    /> -->
+    />
     <transition
       :name="`slider-${this.direction}`"
       mode="out-in"
@@ -13,11 +13,11 @@
     >
       <router-view id="wrap"/>
     </transition>
-    <!-- <router-link
+    <router-link
       v-if="currentIdx != domains.length-1"
       :to="next ? next : ''"
       class="carousel-slide right"
-    /> -->
+    />
   </div>
 </template>
 
@@ -129,9 +129,11 @@ export default {
 .carousel-slide {
   transition: background-color 0.4s;
   position: absolute;
-  top: 0;
-  width: 10%;
-  height: 100%;
+  top: 50%;
+  width: 5%;
+  /* height: 100%; */
+  height: 50px;
+  transform: translateY(-50%);
   z-index: 10000;
 }
 .carousel-slide:hover {
