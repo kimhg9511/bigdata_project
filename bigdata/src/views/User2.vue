@@ -11,31 +11,32 @@
 import BarChartProfit from "../components/BarChartProfit"
 import LineChartProfit from "../components/LineChartProfit"
 export default {
-  // data() {
-  //   return {
-  //     month: ""
-  //   }
-  // },
   components: {
     BarChartProfit,
     LineChartProfit,
   },
-  // methods: {
-  //   changeMonth(newMonth) {
-  //     this.month = newMonth;
-  //   }
-  // }
+
 }
 </script>
 
 <style scoped>
+#bar-chart-profit {
+  padding-top: 60%;
+}
+#line-chart-profit {
+  padding-top: 60%;
+}  
+@media screen and (min-width: 1025px){
 #monthly-profits {
   display: flex;
 }
 #bar-chart-profit {
   width: 50%;
+  padding-top: 30%;
 }
 #line-chart-profit {
   width: 50%;
+  padding-top: 30%;
+}  
 }
 </style>

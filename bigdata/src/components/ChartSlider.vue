@@ -22,7 +22,7 @@ export default {
       dataset: null,
       timer: null,
       startDate: new Date("2019-01-01 00:00:00"),
-      endDate: new Date("2019-12-01 00:00:00"),
+      endDate: new Date("2019-12-30 00:00:00"),
       formatD3ToMonth: d3.timeFormat("%b %Y"),
       formatD3ToMonthDate: d3.timeFormat("%b-%d"),
       formatD3ToDate: d3.timeFormat("%d %b"),
@@ -76,7 +76,6 @@ export default {
         })
         .on("end", () => {
           const month = this.formatD3ToMonthDate(this.xScale.invert(this.currentValue));
-          // console.log(month);
           this.$store.commit("changeMonth", month);
         })
       );
@@ -89,16 +88,18 @@ export default {
         .append("rect")
         .attr("width", "100")
         .attr("height", "30")
-        .attr("x", "45%")
-        .attr("y", "70%")
-        .attr("fill", "skyblue")
+        .attr("x", "750")
+        .attr("y", "200")
+        .attr("fill", "#1e88e5")
       button
         .append("text")
-        .attr("x", "50%")
-        .attr("y", "90%")
+        .attr("x", "800")
+        .attr("y", "223")
         .attr("text-anchor","middle")
-        .attr("fill", "white")
-        .style("font-weight", "bold")
+        .attr("fill", "#e5e5e5")
+        .style("font-family", "NanumSquareRound")
+        .style("font-size", "24px")
+        .style("font-weight", "900")
         .text("Play")
     },
     drawSliderBar(selection) {
@@ -133,42 +134,47 @@ export default {
     addProgressEvent(selection, step) {
       let timer;
       selection.on("click", function() {
-        const button = d3.select(this).select("text");
+        const button = d3.select(this);
         if(button.text() == "Pause") {
           clearInterval(timer);            
-          button.text("Play");
+          button.select("rect").transition().duration(400).ease(d3.easeLinear)
+            .attr("fill", "#1e88e5")
+          button.select("text").text("Play");
         }
         else {
           timer = setInterval(() => {
             step(selection)
-          }, 1200);
-          button.text("Pause");
+          }, 100);
+          button.select("rect").transition().duration(400).ease(d3.easeLinear)
+            .attr("fill", "#e53935")
+          button.select("text").text("Pause");
         }
       })
       return selection;
     },
     step(selection) {
       this.currentIdx += 1;
-      this.currentValue = this.xScale(this.xScale.ticks(12)[this.currentIdx]);
+      this.currentValue = this.xScale(this.xScale.ticks(365)[this.currentIdx-1]);
       const month = this.formatD3ToMonthDate(this.xScale.invert(this.currentValue));
-      this.$store.commit("changeMonth", month);
-      if(this.currentIdx > 11) {
-        // selection.dispatch("click");
-        // this.currentIdx = 0;
-        // this.currentValue = 0;
+      d3.select("#bar-chart-marcap>svg>g").dispatch("update", {detail: { date: this.formatD3ToTime(this.xScale.invert(this.currentValue))}});
+      if(month.split("-")[1] == "19") {
+        this.$store.commit("changeMonth", month);
+      }
+      if(this.currentIdx == 364) {
+        selection.dispatch("click");
       }
     }
   },
   watch: {
     'currentValue' (newValue, oldValue) {
-      const ticks = this.xScale.ticks(12)
-      this.currentIdx = ticks.map(el => this.xScale(el) <= newValue).indexOf(false)-1;
+      const ticks = this.xScale.ticks(365)
+      this.currentIdx = ticks.map(el => this.xScale(el) <= newValue).indexOf(false);
       if(d3.select(`${this.chartName} .play-button>text`).node().textContent == "Pause") {
         d3.select(`${this.chartName} .handle`)
-          .transition().duration(400)
+          .transition().duration(100)
           .attr("cx", newValue);
         d3.select(`${this.chartName} .label`)
-          .transition().duration(400)
+          .transition().duration(100)
           .attr("x", newValue)
           .text(this.formatD3ToDate(this.xScale.invert(newValue)));
       }

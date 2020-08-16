@@ -19,7 +19,9 @@ export default {
     this.$store.dispatch("LOAD_JSON_CLOUD", "word.json")
     this.$store.dispatch("LOAD_JSON_BAR_MARCAP", "marcap08052.json")
     this.$store.dispatch("LOAD_CSV_LINE_PROFIT", "profit4.csv")
+    this.$store.dispatch("LOAD_CSV_LINE_PROFIT_UPGRADE", "list_2.csv")
     this.$store.dispatch("LOAD_CSV_BAR_PROFIT", "each.csv")
+    this.$store.dispatch("LOAD_CSV_BAR_PROFIT_UPGRADE", "rank_1.csv")
   }
 }
 </script>

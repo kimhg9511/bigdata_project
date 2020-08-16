@@ -24,9 +24,9 @@ export default {
     drawBarChart() {
       let count = 0;
       let date = this.dates[count];
-      let OneDayData = preProcess(this.data, date).slice(11,31);
+      let OneDayData = preProcess(this.data, date).slice(2);
       const chart = {
-        width: 2000,
+        width: 1500,
         height: 500,
         margin: {
           top: 20,
@@ -53,14 +53,11 @@ export default {
       const xValue = 'Marcap';
       const yValue = 'Name';
     // 색상 설정
-      const colorScale = d3.scaleLinear()
-        .domain([0, 50])
-        .range(["#222","#ccc"])
-        .clamp(true);
+      const colorScale = d3.schemePastel1
     // 그래프 축 설정 - x
       const xAxisGroup = barChart.append("g")
         .attr("transform", `translate(0,${chart.graphHeight()})`)
-        .transition().duration(400);
+        .transition().duration(100);
       const xScaleBar = d3.scaleLinear();
       const xAxis = d3.axisBottom(xScaleBar)
         .ticks(4)
@@ -68,7 +65,7 @@ export default {
     // 그래프 축 설정 - y
       const yAxisGroup = barChart.append("g")
         .classed("yAxis", true)
-        .attr("fill", (d,i) => colorScale(i))
+        .attr("fill", (d,i) => colorScale[i%colorScale.length])
         .style("font-weight", "bold")
         .style("font-size", "8px");
       const yScaleBar = d3.scaleBand();
@@ -77,7 +74,7 @@ export default {
       barChart.selectAll("rect").data(OneDayData).call(draw, OneDayData)
       barChart.on("update", () => {
         let date = d3.event.detail.date;
-        OneDayData = preProcess(this.data, date).slice(11,31);
+        OneDayData = preProcess(this.data, date).slice(2);
         if (this.dates.includes(date)) {
           barChart.selectAll("rect").data(OneDayData).call(update, OneDayData)
         }
@@ -101,20 +98,20 @@ export default {
           .append("rect")      
           .attr("class", "bar-rect")
         rects
-          .attr("fill", (d,i) => colorScale(i))
+          .attr("fill", (d,i) => colorScale[i%colorScale.length])
+          .attr("opacity", 0.8)
           .attr("x", 1)
           .attr("y", d =>{ 
             return yScaleBar(d[yValue])
           })
           .attr("height", yScaleBar.bandwidth)
           .transition()
-          .duration(2000)
+          .duration(100)
           .delay((d,i) => i * 40)
           .attr("width", d=> xScaleBar(d[xValue]))  
           selection.data(OneDayData)
             .transition()
-            .duration(400)
-            // .attr("fill", (d,i) => colorScale(i))
+            .duration(100)
             .attr("width", d=> xScaleBar(d[xValue]))
             .attr("y", d => {
               return yScaleBar(d[yValue])
@@ -128,10 +125,10 @@ export default {
           .attr("opacity", 0)
           .attr("font-size", 0)
           .transition()
-          .duration(2000)
+          .duration(100)
           .delay((d, i) => i * 40)
           .attr("opacity", 1)
-          .attr("font-size", 8)
+          .attr("font-size", 12)
       }
       function update(selection, OneDayData) {
         // xAxis update
@@ -145,16 +142,20 @@ export default {
           .range([0, chart.graphHeight()]);
         yAxisGroup
           .transition()
-          .duration(400)
+          .duration(100)
           .call(yAxis);
         selection.data(OneDayData)
           .transition()
-          .duration(400)
-          // .attr("fill", (d,i) => colorScale(i))
+          .duration(100)
           .attr("width", d=> xScaleBar(d[xValue]))
           .attr("y", d => {
             return yScaleBar(d[yValue])
           })
+        yAxisGroup.selectAll("g.tick>text")
+          .attr("opacity", 0)
+          .attr("font-size", 0)
+          .attr("opacity", 1)
+          .attr("font-size", 12)
       }
       function preProcess(data, date) {
         let temp_array = new Array();
@@ -172,6 +173,6 @@ export default {
 
 <style scoped>
 #bar-chart-marcap {
-  padding-top: 30%;
+  padding-top: 34%;
 }
 </style>

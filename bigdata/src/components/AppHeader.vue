@@ -40,6 +40,7 @@ export default {
 .nav-items {
   text-align: center;
   font-family: "NanumBarunpen";
+  font-size: 1.4rem;
   font-weight: 700;
   color: #ffeb3b;
 }

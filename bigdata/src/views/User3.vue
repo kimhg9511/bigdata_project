@@ -1,10 +1,6 @@
 <template>
   <div class="cloud-view">
     <word-cloud></word-cloud>
-    <!-- <div id="content-box">
-      <div>graph1</div>
-    </div> -->
-    <!-- <div id="content-box">{{ data }}</div> -->
     <force-detected-tree></force-detected-tree>
   </div>
 </template>
@@ -17,39 +13,19 @@ export default {
     ForceDetectedTree,
     WordCloud,
   },
-  data() {
-    return {
-      data: Object,
-      componentKey : 0,
-    }
-  },
-  mounted() {
-    this.setContent();
-  },
-  methods: {
-    setContent() {
-      const self = this;
-      d3.select("#content-box")
-        .on("update", () => {
-          self.data = d3.event.detail.data;
-        })
-    },
-  }
 }
 </script>
 
 <style scoped>
-.cloud-view {
-  display: flex;
-}
-#text-cloud {
-  width: 50%;
-}
-#content-box {
-  width: 50%;
-}
-#content-box div {
-  text-align: center;
-  height: 120px;
+@media screen and (min-width: 1025px){
+  .cloud-view {
+    display: flex;
+  }
+  #text-cloud {
+    width: 50%;
+  }
+  #force-detected-tree {
+    width: 50%;
+  }
 }
 </style>

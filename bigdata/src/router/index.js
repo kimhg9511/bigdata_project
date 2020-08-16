@@ -42,18 +42,8 @@ const routes = [
   {
     path: "/user4",
     name: "User4",
-    component: () => import("../views/User5.vue")
+    component: () => import("../views/User4.vue")
   },
-  // {
-  //   path: "/final",
-  //   name: "Final",
-  //   component: () => import("../views/Final.vue")
-  // },
-  // {
-  //   path: "/skip",
-  //   name: "Skip",
-  //   redirect: '/home'
-  // },
 ];
 
 const router = new VueRouter({

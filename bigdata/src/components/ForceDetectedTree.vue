@@ -1,62 +1,92 @@
 <template>
   <div id="force-detected-tree">
-
   </div>
 </template>
 
 <script>
 import * as d3 from "d3";
-import * as json from "../../public/data/flare-3.json"
+import * as json from "../../public/data/hot_coin.json"
 export default {
+  data() {
+    return {
+      colorScale_1: d3.schemePastel1,
+    }
+  },
   mounted() {
     this.drawTreeChart();
   },
   methods: {
     drawTreeChart() {
-      
       const width = 800;
       const height = 500;
       // data definition
+      let target = json.default.children[1].children;
+      const filterArr = [];
+      for (let i=0;i < target.length; i++) {
+        if(filterArr.indexOf(target[i].name) == -1) {
+          filterArr.push(target[i].name)
+        }
+        else {
+          target.splice(i, 1);
+          i -= 1;
+        }
+      }
       const root = d3.hierarchy(json.default);
       const links = root.links();
       const nodes = root.descendants();
 
       const simulation = d3.forceSimulation(nodes)
-          .force("link", d3.forceLink(links).id(d => d.id).distance(50).strength(1))
-          .force("charge", d3.forceManyBody().strength(-200))
+          .force("link", d3.forceLink(links)
+            .id(d => d.id)
+            .distance(d => {
+              return d.target.data.value 
+                ? d.target.data.value * 250
+                : 125;
+            })
+            .strength(0.2)
+          )
+          .force("charge", d3.forceManyBody()
+            .strength(-90)
+          )
           .force("x", d3.forceX())
           .force("y", d3.forceY());
-      // console.log(simulation);
-      const svg = d3.select("#force-detected-tree").append("svg")
-          .attr("viewBox", [-width / 2, -height / 2, width, height]);
-
+      let svg = d3.select("#force-detected-tree")
+        .classed("svg-container", true)
+        .append("svg")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .classed("svg-content", true)
+        .append("g")
+        .attr("transform",`translate(${width/2},${height/2})`); 
       const link = svg.append("g")
-        .attr("stroke", "grey")
+        .attr("stroke", "rgba(229,229,229,0.2)")
         .selectAll("line")
         .data(links)
         .join("line")
-        .attr("stroke-width", () => {
-          const temp = Math.random() * 3;
-          return temp;
-        });
+        .attr("stroke-width", 2)
+        // () => {
+        //   const temp = Math.random() * 3;
+        //   return temp;
+        // });
       const node = svg.append("g")
-          .attr("fill", "#fff")
-          .attr("stroke", "#000")
-          .attr("stroke-width", 1.5)
         .selectAll("g")
         .data(nodes)
         .join("g")
       node.append("circle")
-        .attr("fill", d => d.children ? null : "#000")
-        .attr("stroke", d => d.children ? null : "#fff")
-        .attr("r", () => {
-          const temp = (Math.random()+0.5) * 10
-          return temp;
+        // .attr("fill", d => d.children ? null : "#ffeb3b")
+        .attr("fill", "rgba(229,229,229,0.5)")
+        // .attr("stroke", d => d.children ? null : "#000")
+        .attr("r", d => {
+          return (3 - d.depth) * 10;
         })
-        .attr("opacity", 0.7)
+        // .attr("opacity", 0.5)
         .call(drag(simulation));
       node.append("text")
-        // .style("color", d => d.children ? "#fff" : "#000")
+        .attr("fill", () => {
+          return this.colorScale_1[parseInt(Math.random() * this.colorScale_1.length)]
+        })
+        .style("font-size", d =>  (3 - d.depth) * 20)
+        // d.children ? null : "#e5e5e5")
         .attr("text-anchor", "middle")
         .text(d => d.data.name)
         .call(drag(simulation));
@@ -66,7 +96,6 @@ export default {
           .attr("y1", d => d.source.y)
           .attr("x2", d => d.target.x)
           .attr("y2", d => d.target.y);
-
         node.selectAll("circle")
           .attr("cx", d => d.x)
           .attr("cy", d => d.y);
@@ -75,7 +104,6 @@ export default {
           .attr("y", d => d.y);
       });
       function drag(simulation){
-  
         function dragstarted(d) {
           if (!d3.event.active) simulation.alphaTarget(0.3).restart();
           d.fx = d.x;
@@ -91,8 +119,7 @@ export default {
           if (!d3.event.active) simulation.alphaTarget(0);
           d.fx = null;
           d.fy = null;
-        }
-        
+        }     
         return d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -105,7 +132,6 @@ export default {
 
 <style>
 #force-detected-tree {
-  width: 500px;
-  height: 700px;
+  padding-top: 60%;
 }
 </style>

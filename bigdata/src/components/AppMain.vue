@@ -117,6 +117,9 @@ export default {
 </script>
 
 <style scoped>
+#wrap {
+  height: 100%;
+}
 #carousel {
   padding: 0.5%;
   min-height: 600px;
@@ -131,7 +134,6 @@ export default {
   position: absolute;
   top: 50%;
   width: 5%;
-  /* height: 100%; */
   height: 50px;
   transform: translateY(-50%);
   z-index: 10000;

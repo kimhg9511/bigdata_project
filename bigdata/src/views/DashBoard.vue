@@ -13,9 +13,9 @@
       </div>
     </div>
     <div class="row notebook">
-      <div class="chart-card col-4">member1 notebook</div>
-      <div class="chart-card col-4">member2 notebook</div>   
-      <div class="chart-card col-4">member3 notebook</div>
+      <div class="chart-card col-4"><a href="/data/marcap.html">신동환 notebook</a></div>
+      <div class="chart-card col-4"><a href="/data/ex3.html">이수연 notebook</a></div>   
+      <div class="chart-card col-4"><a href="/data/marcap.html">심은식 notebook</a></div>
     </div>
   </div>
 </template>
@@ -40,7 +40,6 @@ export default {
   color: #e5e5e5;
   background-color: #333; 
   margin: 0.5%;
-  /* border: 1px solid #fff; */
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2) ,0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .notebook {
@@ -48,10 +47,14 @@ export default {
 }
 .notebook>div{
   display: flex;
+  height: 150px;
   justify-content: center;
   align-items: center;
   text-align: center;
   font-size: 2rem;
+}
+.notebook>div>a {
+  color: #e5e5e5;
 }
 .information>div{
   display: flex;

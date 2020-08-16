@@ -18,7 +18,6 @@ export default {
         bottom: 50,
         left: 40
       },
-      // currentDate: '',
     }
   },
   computed: {

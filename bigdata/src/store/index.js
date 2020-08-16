@@ -20,21 +20,27 @@ export default new Vuex.Store({
       },
       {
         url: "user1",
-        name: "일자별 시총 순위"
+        name: "시총 순위"
       },
       {
         url: "user2",
-        name: "월별 수익률"
+        name: "시총 전략"
+      },
+      {
+        url: "user4",
+        name: "영업이익률"
       },
       {
         url: "user3",
-        name: "코인 커뮤니티 키워드"
+        name: "커뮤니티 키워드"
       },
     ],
     dataCloud: {},
     dataLineProfit: [],
     dataBarProfit: [],
     dataBarMarcap: [],
+    dataBarProfitUpgrade: [],
+    dataLineProfitUpgrade: [],
     month: "",
   },
   getters: {
@@ -57,6 +63,12 @@ export default new Vuex.Store({
     },
     SET_CSV_BAR_PROFIT(state, dataBarProfit) {
       state.dataBarProfit = dataBarProfit;
+    },
+    SET_CSV_BAR_PROFIT_UPGRADE(state, dataBarProfitUpgrade) {
+      state.dataBarProfitUpgrade = dataBarProfitUpgrade;
+    },
+    SET_CSV_LINE_PROFIT_UPGRADE(state, dataLineProfitUpgrade) {
+      state.dataLineProfitUpgrade = dataLineProfitUpgrade;
     }
   },
   actions: {
@@ -91,6 +103,32 @@ export default new Vuex.Store({
     LOAD_JSON_BAR_MARCAP({ commit }, fileName) {
       return loadFile(fileName)
         .then(({data}) => commit('SET_JSON_BAR_MARCAP', data))
+        .catch(error => console.log(error));
+    },
+    LOAD_CSV_BAR_PROFIT_UPGRADE({ commit }, fileName) {
+      return loadFile(fileName)
+        .then(({data}) => {
+          let dataBarProfitUpgrade = data.split("\n").map(el => el.split(","));
+          dataBarProfitUpgrade = dataBarProfitUpgrade.map(el => {
+            el[1] = el[1] == "#VALUE!" ? 0 : el[1];
+            el[2] = escape(el[2]).replace("%0D","");
+            return el
+          })
+          commit('SET_CSV_BAR_PROFIT_UPGRADE', dataBarProfitUpgrade)
+        })
+        .catch(error => console.log(error));
+    },
+    LOAD_CSV_LINE_PROFIT_UPGRADE({ commit }, fileName) {
+      return loadFile(fileName)
+        .then(({data}) => {
+          let dataLineProfitUpgrade = data.split("\n").map(el => el.split(","));
+          dataLineProfitUpgrade = dataLineProfitUpgrade.map(el => {
+            el[1] = el[1] == "#VALUE!" ? 0 : el[1];
+            el[2] = escape(el[2]).replace("%0D","");
+            return el
+          })
+          commit('SET_CSV_LINE_PROFIT_UPGRADE', dataLineProfitUpgrade)
+        })
         .catch(error => console.log(error));
     }
   },

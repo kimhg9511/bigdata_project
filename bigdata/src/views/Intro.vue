@@ -5,7 +5,10 @@
     name="cards"
   >
     <div v-for="card in cards" :key="card.name" class="card-item">
-      {{ card.name }}
+      <p class="name">{{ card.name }} </p>
+      <p class="job">{{ card.job }} </p>
+      <p class="univ">{{ card.univ }} </p>
+      <p class="email">{{ card.email }} </p>
     </div>
   </transition-group>
 </template>
@@ -16,16 +19,28 @@ export default {
     return {
       cards: [
         {
-          name: 'a'
+          name: '김현겸',
+          job: "Web Developer",
+          univ: "Korea IT College",
+          email: "kimhg951117@gmail.com"
         },
         {
-          name: 'b'
+          name: '신동환',
+          job: "Asam Asset Management",
+          univ: "Korea Univ.",
+          email: "tlsehd0101@naver.com"
         },
         {
-          name: 'c'
+          name: '이수연',
+          job: "SK Asset Management",
+          univ: "Korea PT Univ.",
+          email: "buzz7473@naver.com"
         },
         {
-          name: 'd'
+          name: '심은식',
+          job: "Data Analyst",
+          univ: "Daelim College",
+          email: "essim92@naver.com"
         },
       ],
       mouseover: {
@@ -39,24 +54,44 @@ export default {
 <style scoped>
 .cards {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
 }
 .card-item {
-  width: 300px;
-  height: 500px;
+  width: 49%;
+  height: 300px;
+  margin: 0.5%;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: center;
-  font-size: 5rem;
+  font-family: "NanumBarunpen";
   font-weight: bold;
-  background-color: #bbb;
-  /* transition: all 0.8s; */
+  padding-right: 15px;
+  background-color: #333;
+  color: #e5e5e5;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2) ,0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.card-item > p{
+  margin: 15px 0;
+}
+.name {
+  padding-left: 15px;
+  align-self: start;
+  font-family: "NanumSquareRound";
+  font-size: 2.5rem;
+  flex-grow: 1;
+}
+.job {
+  color: #ffeb3b;
 }
 .card-item:hover {
-  background-color: #fff;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),0 6px 20px 0 rgba(0, 0, 0, 0.19)
 }
-/* .cards-enter-active {
-} */
+@media screen and (min-width: 1025px){
+.card-item {
+  width: 24%;
+}
+}
 </style>
