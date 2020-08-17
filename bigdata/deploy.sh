@@ -7,6 +7,7 @@ npm run build
 
 echo ">> 빌드 Directory로 이동 <<"
 cd dist
+cp index.html 404.html
 
 echo ">> git init <<"
 git init
