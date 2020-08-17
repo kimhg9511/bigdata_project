@@ -1,6 +1,6 @@
 module.exports = {
   lintOnSave: false,
-  publicPath: process.env.NODE_ENV === 'production'
-  ? '/bigdata_build/'
-  : '/'
+  // publicPath: process.env.NODE_ENV === 'production'
+  // ? '/bigdata_build/'
+  // : '/'
 }

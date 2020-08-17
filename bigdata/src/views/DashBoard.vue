@@ -15,7 +15,7 @@
     <div class="row notebook">
       <div class="chart-card col-4"><a href="/data/marcap.html">신동환 notebook</a></div>
       <div class="chart-card col-4"><a href="/data/ex3.html">이수연 notebook</a></div>   
-      <div class="chart-card col-4"><a href="/data/marcap.html">심은식 notebook</a></div>
+      <div class="chart-card col-4"><a href="/data/team_project.html">심은식 notebook</a></div>
     </div>
   </div>
 </template>
