@@ -5,6 +5,7 @@
 <script>
 import * as d3 from "d3";
 import * as d3cloud from "d3-cloud";
+// import rawData from "../../public/data/word.json"
 export default {
   name: "word-cloud",
   data() {
@@ -16,8 +17,14 @@ export default {
     }
   },
   computed: {
-    realData() {      
-      return this.rawData.sort((a,b) => b["count"] - a["count"]).slice(0, 500)
+    realData() {
+      const ret = Object.keys(this.rawData).map(el => {
+        return {
+          name: el,
+          count: this.rawData[el]
+        }
+      })      
+      return ret.sort((a,b) => b["count"] - a["count"]).slice(0, 20)
     },
     cMin() {
       return this.realData.reduce((a,b) => a["count"] > b["count"] ? b : a)["count"];
@@ -29,7 +36,7 @@ export default {
       return d3.scalePow()
         .exponent(0.5)
         .domain([this.cMin, this.cMax])
-        .range([8, 40]);
+        .range([40, 200]);
     },
     color() {
       return d3.scaleLinear()
